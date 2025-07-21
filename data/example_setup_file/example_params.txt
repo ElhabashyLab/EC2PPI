@@ -1,41 +1,46 @@
+{
 #---Required inputs---
 
 # training run (True / False)
-"training_run" : True
+"training_run" : true,
 
 # prediction run (True / False)
-"prediction_run" : True
+"prediction_run" : true,
 
 #---Training run input---
 
 # complex info csv
-"training_complex_info_table_filepath" : "../data/example_input/training/complex_info_example.csv"
+"training_complex_info_table_filepath" : "../data/example_input/training/human_mito_structure_ppi_prefix_3d_714_Nov2024.csv",
 
 # complex info directory with subfolders
-"training_complex_directory" : "../data/example_input/training/complex_examples"
+"training_complex_directory" : "../data/example_input/training/complex_examples",
 
 # complex evolution coupling data directory
-"training_complex_ec_directory" : "../data/example_input/training/complex_ec_examples"
+"training_complex_ec_directory" : "../data/example_input/training/complex_ec_examples",
 
 # complex alphafold3 data directory
-"training_complex_af3_directory"
+"training_complex_af3_directory" : "../data/example_input/training/complex_af3_examples",
 
 # model export
-"model_export_filepath" : "../data/example_results/<>"
+"model_export_filepath" : "../data/example_results/model_export.whatever",
 
 #---Prediction run input---
 
 # complex info csv
-"prediction_complex_info_table_filepath" : "../data/example_input/training/complex_info_example.csv"
+"prediction_complex_info_table_filepath" : "../data/example_input/training/complex_info_example.csv",
 
 # complex info directory with subfolders
-"prediction_complex_directory" : "../data/example_input/training/complex_examples"
+"prediction_complex_directory" : "../data/example_input/training/complex_examples",
 
 # complex evolution coupling data directory
-"prediction_complex_ec_directory" : "../data/example_input/training/complex_ec_examples"
+"prediction_complex_ec_directory" : "../data/example_input/training/complex_ec_examples",
 
 # complex alphafold3 data directory
-"prediction_complex_af3_directory"
+"prediction_complex_af3_directory" : "../data/example_input/training/complex_af3_examples",
+
+# model import filepath or "latest" for latest trained model (stored in export directory)
+"model_import_filepath" : "latest",
 
 # results export
-"prediction_export" : "../data/example_results/<>"
+"prediction_export_filepath" : "../data/example_results"
+}

@@ -15,16 +15,7 @@ def read_dataset(params):
         """
         pass
 
-    def read_test_dataset(params):
-        """
-        Reads the test dataset based on the provided parameters.
-
-        :param params: Dictionary containing parameters for reading the dataset.
-        :return: List of PPI objects representing the test dataset.
-        """
-        pass
-
-    def read_dataset(params):
+    def read_applied_dataset(params):
         """
         Reads the use case dataset based on the provided parameters.
 

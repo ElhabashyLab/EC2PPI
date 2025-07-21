@@ -1,0 +1,41 @@
+#---Required inputs---
+
+# training run (True / False)
+"training_run" : True
+
+# prediction run (True / False)
+"prediction_run" : True
+
+#---Training run input---
+
+# complex info csv
+"training_complex_info_table_filepath" : "../data/example_input/training/complex_info_example.csv"
+
+# complex info directory with subfolders
+"training_complex_directory" : "../data/example_input/training/complex_examples"
+
+# complex evolution coupling data directory
+"training_complex_ec_directory" : "../data/example_input/training/complex_ec_examples"
+
+# complex alphafold3 data directory
+"training_complex_af3_directory"
+
+# model export
+"model_export_filepath" : "../data/example_results/<>"
+
+#---Prediction run input---
+
+# complex info csv
+"prediction_complex_info_table_filepath" : "../data/example_input/training/complex_info_example.csv"
+
+# complex info directory with subfolders
+"prediction_complex_directory" : "../data/example_input/training/complex_examples"
+
+# complex evolution coupling data directory
+"prediction_complex_ec_directory" : "../data/example_input/training/complex_ec_examples"
+
+# complex alphafold3 data directory
+"prediction_complex_af3_directory"
+
+# results export
+"prediction_export" : "../data/example_results/<>"

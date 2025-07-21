@@ -3,8 +3,7 @@ import os
 import json
 
 def main():
-    """Main function to run the program.
-    Wraps the main logic of the program.
+    """Main function,wraps the main logic of the program.
     """
 
     # Check if the params file is given as argument
@@ -26,4 +25,9 @@ def main():
         if not d.startswith('#') and len(d) > 0:
             json_string += d + '\n'
     params = json.loads(json_string)
+    if not isinstance(params, dict):
+        print(f'WARNING: The input {params_file_path} is not a valid params file. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        exit()
+
+
 

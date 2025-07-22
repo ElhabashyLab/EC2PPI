@@ -15,6 +15,8 @@ def check_required_params(params):
     for param in required_params:
         if param not in params:
             raise ValueError(f'Missing required parameter: {param}')
+    if not (params['training_run'] or params['prediction_run']):
+        raise ValueError('At least one of training_run or prediction_run must be set to True in the parameters.')
 
     if params['training_run']:
         required_params_training = ['training_complex_info_table_filepath',
@@ -36,12 +38,16 @@ def check_required_params(params):
         for param in required_params_prediction:
             if param not in params:
                 raise ValueError(f'Missing required prediction parameter: {param}')
+        if params['model_import_filepath'] == 'latest':
+            if 'model_export_filepath' not in params:
+                raise ValueError('If model_import_filepath is set to "latest", model_export_filepath must also be provided.')
+            params['model_import_filepath'] = params['model_export_filepath']
 
     print('All required parameters are present. Check complete.')
 
 def read_params(params_file_path):
     """
-    Reads the parameters from a given file path.
+    Reads the parameters from a given file path and checks for required parameters.
 
     :param params_file_path: Path to the parameters file.
     :return: Dictionary containing the parameters.

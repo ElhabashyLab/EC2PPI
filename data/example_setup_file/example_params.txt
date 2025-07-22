@@ -10,7 +10,7 @@
 #---Training run input---
 
 # complex info csv
-"training_complex_info_table_filepath" : "../data/example_input/training/human_mito_structure_ppi_prefix_3d_714_Nov2024.csv",
+"training_complex_info_table_filepath" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/training/human_mito_structure_ppi_prefix_3d_714_Nov2024.csv",
 
 # complex info directory with subfolders
 "training_complex_directory" : "../data/example_input/training/complex_examples",

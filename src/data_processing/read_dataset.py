@@ -38,34 +38,12 @@ def read_dataset(info_table_filepath, complex_directory, complex_ec_directory, c
     :param complex_af3_directory:
     :return:
     """
-    # Validate the file paths
-    info_table_filepath = validate_path(info_table_filepath, 'file')
-    #complex_directory = validate_path(complex_directory, 'directory')
-    #complex_ec_directory = validate_path(complex_ec_directory, 'directory')
-    #complex_af3_directory = validate_path(complex_af3_directory, 'directory')
 
-    protein_pairs = []
     # Read the info table
     protein_pairs = read_info_table(info_table_filepath)
 
     return protein_pairs
 
-def validate_path(path, expected_type):
-    """
-    Validates the file paths in the parameters dictionary.
-
-    :param path: Path to be validated.
-    :param expected_type: Type of path ('file' or 'directory').
-    :raises ValueError: If any path is invalid.
-    """
-    path = pathlib.Path(path)#.resolve()
-
-    if expected_type == 'file' and not path.is_file():
-        raise ValueError(f'The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-    elif expected_type == 'directory' and not path.is_dir():
-        raise ValueError(f'The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-
-    return path
 
 def read_info_table(info_table_filepath):
     """

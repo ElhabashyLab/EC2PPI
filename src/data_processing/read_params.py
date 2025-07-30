@@ -1,5 +1,6 @@
 import os
 import json
+import pathlib
 
 def check_required_params(params):
     """
@@ -45,6 +46,36 @@ def check_required_params(params):
 
     print('All required parameters are present. Check complete.')
 
+
+def check_paths(params):
+    """ Checks if the file paths in the parameters dictionary are valid.
+    :param params: Dictionary containing parameters.
+    :raises ValueError: If any path is invalid.
+    """
+
+    for key, value in params.items():
+        if key.endswith('_filepath'):
+            validate_path(value, 'file')
+        elif key.endswith('_directory'):
+            validate_path(value, 'directory')
+
+def validate_path(path, expected_type):
+    """
+    Validates the file paths in the parameters dictionary.
+
+    :param path: Path to be validated.
+    :param expected_type: Type of path ('file' or 'directory').
+    :raises ValueError: If any path is invalid.
+    """
+    path = pathlib.Path(path)#.resolve()
+
+    if expected_type == 'file' and not path.is_file():
+        raise ValueError(f'The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+    elif expected_type == 'directory' and not path.is_dir():
+        raise ValueError(f'The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+
+    return path
+
 def read_params(params_file_path):
     """
     Reads the parameters from a given file path and checks for required parameters.
@@ -72,5 +103,7 @@ def read_params(params_file_path):
 
     check_required_params(params)
     print(f'Parameters read from {params_file_path}:\n{json.dumps(params, indent=4)}')
+    check_paths(params)
+    print('All paths are valid. Paths check complete.')
 
     return params

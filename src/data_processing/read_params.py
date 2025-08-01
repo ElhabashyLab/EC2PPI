@@ -70,9 +70,11 @@ def validate_path(path, expected_type):
     path = pathlib.Path(path)#.resolve()
 
     if expected_type == 'file' and not path.is_file():
-        raise ValueError(f'The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        #raise ValueError(f'The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        print(f'WARNING: The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
     elif expected_type == 'directory' and not path.is_dir():
-        raise ValueError(f'The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        #raise ValueError(f'The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        print(f'WARNING: The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
 
     return path
 

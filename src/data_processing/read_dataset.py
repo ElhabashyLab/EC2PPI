@@ -39,7 +39,7 @@ def read_dataset(info_table_filepath, complex_directory, complex_ec_directory, c
     :return:
     """
 
-    # Read the info table
+    # Read uniprot ids for each pair of proteins from the info table
     protein_pairs = read_info_table(info_table_filepath)
 
     return protein_pairs
@@ -55,6 +55,8 @@ def read_info_table(info_table_filepath):
     pps = []
     try:
         df = pd.read_csv(info_table_filepath, sep=',')
+        #for col, val in df.iloc[0].items():
+            #print(f"{col}: {val}")
         for index, row in df.iterrows():
             protein1 = Protein(uniprot_id=row['uid1'])
             protein2 = Protein(uniprot_id=row['uid2'])

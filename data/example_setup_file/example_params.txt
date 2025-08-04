@@ -10,28 +10,28 @@
 #===Training run input===
 
 #+++Positive dataset+++
-    "positive_training_complex_info_table_filepath" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/ppi_nov24_training_data/positive_dataset/sorted_complex_info_table.csv",
-    "positive_training_complex_ec_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/ppi_nov24_training_data/positive_dataset/complex_ec_data",
-    "positive_training_complex_af3_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/ppi_nov24_training_data/positive_dataset/complex_af3_data",
+    "positive_training_complex_info_table_filepath" : "<path>",
+    "positive_training_complex_ec_directory" : "<path>",
+    "positive_training_complex_af3_directory" : "<path>",
 #++++++++++++++++++++++
 
 #---Negative dataset---
-    "negative_training_complex_info_table_filepath" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/training/sorted_complex_info_table_Nov24.csv",
-    "negative_training_complex_ec_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/positive_dataset_Nov24",
-    "negative_training_complex_af3_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/training/complex_af3/",
+    "negative_training_complex_info_table_filepath" : "<path>",
+    "negative_training_complex_ec_directory" : "<path>",
+    "negative_training_complex_af3_directory" : "<path>",
 #----------------------
 
 # model export
-    "model_export_filepath" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/",
+    "model_export_filepath" : "<path>",
 
 #===Prediction run input===
-    "prediction_complex_info_table_filepath" : "../data/example_input/training/complex_info_example.csv",
-    "prediction_complex_ec_directory" : "../data/example_input/training/complex_ec_examples",
-    "prediction_complex_af3_directory" : "../data/example_input/training/complex_af3_examples",
+    "prediction_complex_info_table_filepath" : "<path>",
+    "prediction_complex_ec_directory" : "<path>",
+    "prediction_complex_af3_directory" : "<path>",
 
 # model import filepath or "latest" for latest trained model (stored in export directory)
     "model_import_filepath" : "latest",
 
 # results export
-    "prediction_export_filepath" : "../data/example_results"
+    "prediction_export_filepath" : "<path>"
 }

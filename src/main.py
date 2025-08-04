@@ -18,8 +18,8 @@ def main():
     if params['training_run']:
         training_protein_pairs = read_dataset.read_training_dataset(params)
         print(f'Read {len(training_protein_pairs)} protein pairs for training.')
-        #for pair in training_protein_pairs:
-            #print(f'Protein Pair: {pair.protein1._uid} - {pair.protein2._uid}')
+        for pair in training_protein_pairs:
+            print(f'Protein Pair: {pair.prefix} - {pair.protein1.uid} - {pair.protein2.uid} - {pair.label} - {pair.ec_filepath} - {pair.af3_filepath}')
         # TODO
 
         # Calculate features for the training dataset

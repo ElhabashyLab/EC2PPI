@@ -20,10 +20,12 @@ def check_required_params(params):
         raise ValueError('At least one of training_run or prediction_run must be set to True in the parameters.')
 
     if params['training_run']:
-        required_params_training = ['training_complex_info_table_filepath',
-                                    'training_complex_directory',
-                                    'training_complex_ec_directory',
-                                    'training_complex_af3_directory',
+        required_params_training = ['positive_training_complex_info_table_filepath',
+                                    'positive_training_complex_ec_directory',
+                                    'positive_training_complex_af3_directory',
+                                    'negative_training_complex_info_table_filepath',
+                                    'negative_training_complex_ec_directory',
+                                    'negative_training_complex_af3_directory',
                                     'model_export_filepath',]
         for param in required_params_training:
             if param not in params:
@@ -31,7 +33,6 @@ def check_required_params(params):
 
     if params['prediction_run']:
         required_params_prediction = ['prediction_complex_info_table_filepath',
-                                      'prediction_complex_directory',
                                       'prediction_complex_ec_directory',
                                       'prediction_complex_af3_directory',
                                       'model_import_filepath',
@@ -75,8 +76,6 @@ def validate_path(path, expected_type):
     elif expected_type == 'directory' and not path.is_dir():
         #raise ValueError(f'The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
         print(f'WARNING: The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-
-    return path
 
 def read_params(params_file_path):
     """

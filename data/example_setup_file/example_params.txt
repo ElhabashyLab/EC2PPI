@@ -1,46 +1,37 @@
 {
-#---Required inputs---
+#===Required inputs===
 
 # training run (True / False)
-"training_run" : true,
+    "training_run" : true,
 
 # prediction run (True / False)
-"prediction_run" : true,
+    "prediction_run" : true,
 
-#---Training run input---
+#===Training run input===
 
-# complex info csv
-"training_complex_info_table_filepath" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/training/human_mito_structure_ppi_prefix_3d_714_Nov2024.csv",
+#+++Positive dataset+++
+    "positive_training_complex_info_table_filepath" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/ppi_nov24_training_data/positive_dataset/sorted_complex_info_table.csv",
+    "positive_training_complex_ec_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/ppi_nov24_training_data/positive_dataset/complex_ec_data",
+    "positive_training_complex_af3_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/ppi_nov24_training_data/positive_dataset/complex_af3_data",
+#++++++++++++++++++++++
 
-# complex info directory with subfolders
-"training_complex_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/",
-
-# complex evolution coupling data directory
-"training_complex_ec_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/",
-
-# complex alphafold3 data directory
-"training_complex_af3_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/training/complex_af3/",
+#---Negative dataset---
+    "negative_training_complex_info_table_filepath" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/training/sorted_complex_info_table_Nov24.csv",
+    "negative_training_complex_ec_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/positive_dataset_Nov24",
+    "negative_training_complex_af3_directory" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/training/complex_af3/",
+#----------------------
 
 # model export
-"model_export_filepath" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/",
+    "model_export_filepath" : "/mnt/d/Dokumente/Studium/Max_Planck_Institut/ec2ppi/data/example_input/",
 
-#---Prediction run input---
-
-# complex info csv
-"prediction_complex_info_table_filepath" : "../data/example_input/training/complex_info_example.csv",
-
-# complex info directory with subfolders
-"prediction_complex_directory" : "../data/example_input/training/complex_examples",
-
-# complex evolution coupling data directory
-"prediction_complex_ec_directory" : "../data/example_input/training/complex_ec_examples",
-
-# complex alphafold3 data directory
-"prediction_complex_af3_directory" : "../data/example_input/training/complex_af3_examples",
+#===Prediction run input===
+    "prediction_complex_info_table_filepath" : "../data/example_input/training/complex_info_example.csv",
+    "prediction_complex_ec_directory" : "../data/example_input/training/complex_ec_examples",
+    "prediction_complex_af3_directory" : "../data/example_input/training/complex_af3_examples",
 
 # model import filepath or "latest" for latest trained model (stored in export directory)
-"model_import_filepath" : "latest",
+    "model_import_filepath" : "latest",
 
 # results export
-"prediction_export_filepath" : "../data/example_results"
+    "prediction_export_filepath" : "../data/example_results"
 }

@@ -18,8 +18,10 @@ def main():
     if params['training_run']:
         training_protein_pairs = read_dataset.read_training_dataset(params)
         print(f'Read {len(training_protein_pairs)} protein pairs for training.')
-        for pair in training_protein_pairs:
-            print(f'Protein Pair: {pair.prefix} - {pair.protein1.uid} - {pair.protein2.uid} - {pair.label} - {pair.ec_filepath} - {pair.af3_filepath}')
+        #for pair in training_protein_pairs:
+            #print(f'Protein Pair: {pair.prefix} - {pair.protein1.uid} - {pair.protein2.uid} - {pair.label} - {pair.protein1.n_eff} - {pair.protein2.n_eff}')
+        #print('Training dataset read successfully.')
+        #print('Length of training dataset:', len(training_protein_pairs))
         # TODO
 
         # Calculate features for the training dataset

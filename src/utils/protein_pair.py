@@ -9,3 +9,6 @@ class ProteinPair:
         self.af3_filepath = af3_filepath
         self.label = label
         self.pairwise_identity = pairwise_identity
+
+        # Initialize additional attributes
+        self.features = None

@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from src.utils.protein import Protein
 from src.utils.protein_pair import ProteinPair
+from src.utils.print import progress_bar
 
 def read_training_dataset(params):
     """
@@ -18,6 +19,7 @@ def read_training_dataset(params):
     positive_training_complex_af3_directory = params['positive_training_complex_af3_directory']
 
     # Read the positive training dataset
+    print('Reading positive training dataset...')
     positive_protein_pairs = read_dataset(
         info_table_filepath=positive_training_complex_info_table_filepath,
         complex_ec_directory=positive_training_complex_ec_directory,
@@ -25,12 +27,14 @@ def read_training_dataset(params):
         label=1
     )
 
+
     # Extract parameters for reading the negative dataset
     negative_training_complex_info_table_filepath = params['negative_training_complex_info_table_filepath']
     negative_training_complex_ec_directory = params['negative_training_complex_ec_directory']
     negative_training_complex_af3_directory = params['negative_training_complex_af3_directory']
 
     # Read the negative training dataset
+    print('Reading negative training dataset...')
     negative_protein_pairs = read_dataset(
         info_table_filepath=negative_training_complex_info_table_filepath,
         complex_ec_directory=negative_training_complex_ec_directory,
@@ -91,7 +95,8 @@ def read_dataset(info_table_filepath, complex_ec_directory, complex_af3_director
             prefix = row['prefix']
             ec_filepath = get_filepath_from_prefix(ec_directory, prefix)
             #af3_filepath = get_filepath_from_prefix(af3_directory, prefix)
-            protein_pairs.append(ProteinPair(prefix=prefix, protein1=protein1, protein2=protein2, ec_filepath=ec_filepath, label=label))
+            protein_pairs.append(ProteinPair(prefix=prefix, protein1=protein1, protein2=protein2, ec_filepath=ec_filepath, label=label, pairwise_identity=row['pairwise_identity']))
+            progress_bar(index, len(df))
     except Exception as e:
         raise ValueError(f'Error reading data: {e}') from e
 

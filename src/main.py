@@ -1,6 +1,7 @@
 import sys
 from src.data_processing.read_params import read_params
 import src.data_processing.read_dataset as read_dataset
+from src.machine_learning.training import train_interaction_classifier
 from src.data_processing.feature_calculation import calculate_all_features
 def main():
     """Main function,wraps the main logic of the program.
@@ -21,10 +22,20 @@ def main():
         training_protein_pairs = read_dataset.read_training_dataset(params)
         print(f'Read {len(training_protein_pairs)} protein pairs for training.')
 
-        calculate_all_features(training_protein_pairs[0:10])
+        # smaller debug set
+        #training_protein_pairs = training_protein_pairs[600:-600]
+
+        calculate_all_features(training_protein_pairs)
         print('Calculated features for training protein pairs.')
-        for item in training_protein_pairs[0].features:
-            print(item)
+
+        train_interaction_classifier(training_protein_pairs, params)
+
+
+
+
+
+        #for item in training_protein_pairs[0].features:
+        #    print(item)
 
         # Calculate features for the training dataset
         # training_data = calculate_features(training_protein_pairs, params)

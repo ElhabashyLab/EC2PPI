@@ -7,7 +7,7 @@ def progress_bar(i, total):
     """
 
     percent = (i + 1) / total * 100
-    bar_length = 40
+    bar_length = 80
     filled_length = int(bar_length * percent // 100)
     bar = '█' * filled_length + '-' * (bar_length - filled_length)
     print(f'\rProgress: |{bar}| {percent:.2f}%', end='\r')

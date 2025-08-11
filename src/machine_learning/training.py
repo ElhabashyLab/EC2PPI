@@ -1,11 +1,9 @@
 import sklearn
-import matplotlib.pyplot as plt
-import numpy as np
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report, auc, roc_curve
 from src.utils.protein_pair import ProteinPair
+from src.machine_learning.evaluation import evaluate_classifier
 def train_interaction_classifier(protein_pairs: list[ProteinPair], params):
 
     X_train, X_test, y_train, y_test = prepare_train_test_data(protein_pairs)
@@ -14,9 +12,11 @@ def train_interaction_classifier(protein_pairs: list[ProteinPair], params):
     clf.fit(X_train, y_train)
 
     best_model = clf.best_estimator_
-    evaluate_classifier(best_model, X_test, y_test)
 
-    joblib.dump(best_model, params['model_export_filepath'])
+    evaluate_classifier(best_model, X_test, y_test, params['export_directory'], params['feature_list'])
+
+    joblib.dump(best_model, f"{params['export_directory']}/best_model.pkl")
+    print(f'Model saved to {params["export_directory"]}')
 
 def prepare_train_test_data(protein_pairs: list[ProteinPair], split_ratio: float = 0.2):
     """Prepares the training and test datasets from a list of ProteinPair objects.
@@ -51,43 +51,11 @@ def random_forest_classifier():
         estimator=rf,
         param_grid=param_grid,
         cv=5,
-        scoring='roc_auc',
+        scoring='precision',
         n_jobs=-1
     )
 
     return grid_search
-
-def evaluate_classifier(clf, X_test, y_test):
-    """Evaluates the classifier on the test dataset.
-
-    :param clf: Trained classifier.
-    :param X_test: Test features.
-    :param y_test: Test labels.
-    :return: Dictionary containing evaluation metrics.
-    """
-
-    y_prob = clf.predict_proba(X_test)[:, 1]
-
-    print(f'Prob: {y_prob[0:10]} - True: {y_test[0:10]}')
-
-    fpr, tpr, _ = roc_curve(y_test, y_prob)
-    roc_auc = auc(fpr, tpr)
-
-    plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.2f}")
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.title("ROC Curve")
-    plt.legend()
-    plt.show()
-
-    feature_importance = clf.feature_importances_
-    indices = np.argsort(feature_importance)[::-1]
-
-    for i in range(len(feature_importance)):
-        print(f"Feature {indices[i]}: importance = {feature_importance[indices[i]]:.4f}")
-
-    print(classification_report(y_test, clf.predict(X_test)))
 
 
 

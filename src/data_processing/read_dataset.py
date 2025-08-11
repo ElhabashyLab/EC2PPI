@@ -45,6 +45,8 @@ def read_training_dataset(params):
     # Combine positive and negative protein pairs
     protein_pairs = positive_protein_pairs + negative_protein_pairs
 
+    print(f'Read {len(protein_pairs)} protein pairs for training.')
+
     return protein_pairs
 
 def read_applied_dataset(params):
@@ -90,12 +92,31 @@ def read_dataset(info_table_filepath, complex_ec_directory, complex_af3_director
     try:
         df = pd.read_csv(info_table_filepath, sep=',')
         for index, row in df.iterrows():
-            protein1 = Protein(uniprot_id=row['uid1'],n_eff=row['Neff1'], n_eff_l=row['NeffL1'], sequence_length=row['seq1_len'], bit_score=row['bit1'])
-            protein2 = Protein(uniprot_id=row['uid2'],n_eff=row['Neff2'], n_eff_l=row['NeffL2'], sequence_length=row['seq2_len'], bit_score=row['bit2'])
+            protein1 = Protein(
+                uniprot_id=row['uid1'],
+                n_eff=row['Neff1'],
+                n_eff_l=row['NeffL1'],
+                sequence_length=row['seq1_len'],
+                bit_score=row['bit1']
+            )
+            protein2 = Protein(
+                uniprot_id=row['uid2'],
+                n_eff=row['Neff2'],
+                n_eff_l=row['NeffL2'],
+                sequence_length=row['seq2_len'],
+                bit_score=row['bit2']
+            )
             prefix = row['prefix']
             ec_filepath = get_filepath_from_prefix(ec_directory, prefix)
             #af3_filepath = get_filepath_from_prefix(af3_directory, prefix)
-            protein_pairs.append(ProteinPair(prefix=prefix, protein1=protein1, protein2=protein2, ec_filepath=ec_filepath, label=label, pairwise_identity=row['pairwise_identity']))
+            protein_pair = ProteinPair(
+                prefix=prefix,
+                protein1=protein1,
+                protein2=protein2,
+                ec_filepath=ec_filepath,
+                label=label,
+                pairwise_identity=row['pairwise_identity'])
+            protein_pairs.append(protein_pair)
             progress_bar(index, len(df))
     except Exception as e:
         raise ValueError(f'Error reading data: {e}') from e

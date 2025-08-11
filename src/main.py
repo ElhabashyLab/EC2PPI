@@ -20,30 +20,14 @@ def main():
     if params['training_run']:
 
         training_protein_pairs = read_dataset.read_training_dataset(params)
-        print(f'Read {len(training_protein_pairs)} protein pairs for training.')
 
-        # smaller debug set
-        #training_protein_pairs = training_protein_pairs[600:-600]
+        # smaller debug sets
+        #training_protein_pairs = training_protein_pairs[:1]  # Use only the first protein pair for debugging
+        #training_protein_pairs = training_protein_pairs[650:-650]
 
-        calculate_all_features(training_protein_pairs)
-        print('Calculated features for training protein pairs.')
+        calculate_all_features(training_protein_pairs, params)
 
         train_interaction_classifier(training_protein_pairs, params)
-
-
-
-
-
-        #for item in training_protein_pairs[0].features:
-        #    print(item)
-
-        # Calculate features for the training dataset
-        # training_data = calculate_features(training_protein_pairs, params)
-
-        # Initialize the predictor and train the model
-        # predictor = Predictor(params)
-        # predictor.train(training_data)
-        # predictor.save_model(params['model_export_filepath'])
 
     #if params['prediction_run']:
 

@@ -2,6 +2,38 @@ import os
 import json
 import pathlib
 
+def set_default_param(param):
+    """
+    Sets default values for parameters that are not provided in the given dictionary.
+
+    :param param: Parameter to be set to default.
+    :return: Default values for the parameter.
+    """
+    if param == 'training_parameters':
+        param_grid = {
+        'n_estimators': [100, 200, 500],
+        'max_depth': [None, 10, 20],
+        'max_features': ['sqrt', 'log2'],
+        'min_samples_split': [2, 5, 10]
+        }
+        return param_grid
+    elif param == 'feature_list':
+        features = [
+            'n_eff',
+            'n_eff_l',
+            'sequence_length',
+            'bit_score',
+            'pairwise_identity',
+            'cn_mean',
+            'cn_std',
+            'cn_median',
+            'cn_iqr',
+            'cn_max',
+            'cn_skewness',
+            'cn_kurtosis'
+        ]
+        return features
+
 def check_required_params(params):
     """
     Checks if all required parameters are present in the given dictionary.
@@ -26,10 +58,12 @@ def check_required_params(params):
                                     'negative_training_complex_info_table_filepath',
                                     'negative_training_complex_ec_directory',
                                     'negative_training_complex_af3_directory',
-                                    'model_export_filepath',]
+                                    'export_directory']
         for param in required_params_training:
             if param not in params:
                 raise ValueError(f'Missing required training parameter: {param}')
+        if not os.path.exists(params['export_directory']):
+            os.makedirs(params['export_directory'])
 
     if params['prediction_run']:
         required_params_prediction = ['prediction_complex_info_table_filepath',
@@ -44,6 +78,14 @@ def check_required_params(params):
             if 'model_export_filepath' not in params:
                 raise ValueError('If model_import_filepath is set to "latest", model_export_filepath must also be provided.')
             params['model_import_filepath'] = params['model_export_filepath']
+
+    # Parsing optional parameters
+    optional_params = ['training_parameters', 'feature_list']
+    for param in optional_params:
+        if param not in params:
+            params[param] = 'default'
+        if params[param] == 'default':
+            params[param] = set_default_param(param)
 
     print('All required parameters are present. Check complete.')
 

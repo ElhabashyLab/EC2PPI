@@ -1,9 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report, auc, roc_curve
+from sklearn.metrics import auc, roc_curve
+from sklearn.metrics import precision_recall_curve
 
 def get_feature_names(feature_list):
     """Returns the feature names based on the provided feature list.
@@ -44,18 +43,20 @@ def get_feature_names(feature_list):
 
     return feature_names
 
-def plot_roc_curve(fpr, tpr, roc_auc, export_directory):
+def plot_roc_curve(y_test, y_prob, export_directory):
     """Plots the ROC curve and saves it to the specified directory.
 
-    :param fpr: False positive rates.
-    :param tpr: True positive rates.
-    :param roc_auc: Area under the ROC curve.
+    :param y_test: True labels.
+    :param y_prob: Predicted probabilities.
     :param export_directory: Directory to save the ROC curve plot.
     """
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    roc_auc = auc(fpr, tpr)
+
     if os.path.exists(f"{export_directory}/roc_curve.png"):
         os.remove(f"{export_directory}/roc_curve.png")
 
-    plt.figure()
+    plt.figure(figsize=(6, 5))
     plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.2f}")
     plt.plot([0, 1], [0, 1], 'k--')
     plt.xlabel("False Positive Rate")
@@ -85,7 +86,7 @@ def plot_feature_importance(clf, feature_list, export_directory):
         os.remove(f"{export_directory}/feature_importance.png")
 
     colors = ["#08306B" if i < 5 else "#9ECAE1" for i in range(len(sorted_feature_importance))]
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(8, 5))
 
     bars = plt.bar(range(len(sorted_feature_importance)), sorted_feature_importance, align='center', color=colors)
     plt.xticks(range(len(sorted_feature_importance)), sorted_feature_names, rotation=45, ha='right')
@@ -99,6 +100,29 @@ def plot_feature_importance(clf, feature_list, export_directory):
 
     for i in range(len(feature_importance)):
         print(f"Feature {feature_names[indices[i]]}: importance = {feature_importance[indices[i]]:.4f}")
+
+def plot_precision_recall_curve(y_true, y_scores, export_directory):
+    """Plots the precision-recall curve and saves it to the specified directory.
+
+    :param y_true: True labels.
+    :param y_scores: Predicted scores.
+    :param export_directory: Directory to save the precision-recall curve plot.
+    """
+
+    precision, recall, _ = precision_recall_curve(y_true, y_scores)
+
+    if os.path.exists(f"{export_directory}/precision_recall_curve.png"):
+        os.remove(f"{export_directory}/precision_recall_curve.png")
+
+    plt.figure(figsize=(6, 5))
+    plt.plot(recall, precision, label='Precision-Recall Curve')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title('Precision-Recall Curve')
+    plt.savefig(f"{export_directory}/precision_recall_curve.png", dpi=300)
+    plt.close()
+
+    print(f"Precision-recall curve saved as {export_directory}/precision_recall_curve.png")
 
 def evaluate_classifier(clf, X_test, y_test, export_directory, feature_list):
     """Evaluates the classifier on the test dataset.
@@ -115,10 +139,11 @@ def evaluate_classifier(clf, X_test, y_test, export_directory, feature_list):
     print(f'Prob: {y_prob[0:10]} - True: {y_test[0:10]}')
 
 
-    # Generate ROC curve
-    fpr, tpr, _ = roc_curve(y_test, y_prob)
-    roc_auc = auc(fpr, tpr)
-    plot_roc_curve(fpr, tpr, roc_auc, export_directory)
+    # Generate and print ROC curve
+    plot_roc_curve(y_test, y_prob, export_directory)
+
+    # Print precision-recall curve
+    plot_precision_recall_curve(y_test, y_prob, export_directory)
 
     # Print feature importance
     plot_feature_importance(clf, feature_list, export_directory)

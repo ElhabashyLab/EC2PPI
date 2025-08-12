@@ -8,6 +8,4 @@ src/machine_learning/__pycache__/
 data/example_input/ppi_nov24_training_data/
 data/example_setup_file/training_params.txt
 data/example_setup_file/training_params_without_pairwise.txt
-data/example_output_without_pairwise/
-data/example_output_without_alignment_statistics/
 data/example_output/

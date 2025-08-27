@@ -1,4 +1,3 @@
-import pathlib as pathlib
 import os
 import pandas as pd
 from src.utils.protein import Protein
@@ -22,8 +21,8 @@ def read_training_dataset(params):
     print('Reading positive training dataset...')
     positive_protein_pairs = read_dataset(
         info_table_filepath=positive_training_complex_info_table_filepath,
-        complex_ec_directory=positive_training_complex_ec_directory,
-        complex_af3_directory=positive_training_complex_af3_directory,
+        ec_directory=positive_training_complex_ec_directory,
+        af3_directory=positive_training_complex_af3_directory,
         label=1
     )
 
@@ -37,12 +36,19 @@ def read_training_dataset(params):
     print('Reading negative training dataset...')
     negative_protein_pairs = read_dataset(
         info_table_filepath=negative_training_complex_info_table_filepath,
-        complex_ec_directory=negative_training_complex_ec_directory,
-        complex_af3_directory=negative_training_complex_af3_directory,
+        ec_directory=negative_training_complex_ec_directory,
+        af3_directory=negative_training_complex_af3_directory,
         label=0
     )
 
     # Combine positive and negative protein pairs
+    if len(positive_protein_pairs) > len(negative_protein_pairs):
+        print(f'Warning: More positive protein pairs ({len(positive_protein_pairs)}) than negative ({len(negative_protein_pairs)}).')
+        positive_protein_pairs = positive_protein_pairs[:len(negative_protein_pairs)]
+    elif len(negative_protein_pairs) > len(positive_protein_pairs):
+        print(f'Warning: More negative protein pairs ({len(negative_protein_pairs)}) than positive ({len(positive_protein_pairs)}).')
+        negative_protein_pairs = negative_protein_pairs[:len(positive_protein_pairs)]
+
     protein_pairs = positive_protein_pairs + negative_protein_pairs
 
     print(f'Read {len(protein_pairs)} protein pairs for training.')
@@ -58,7 +64,7 @@ def read_applied_dataset(params):
     """
     pass
 
-def get_filepath_from_prefix(directory, prefix):
+def get_path_from_prefix(directory, prefix):
     """
     Returns the file path for a given prefix in the specified directory.
 
@@ -67,27 +73,26 @@ def get_filepath_from_prefix(directory, prefix):
     :return: File path as a string.
     """
 
-    all_files = [entry.path for entry in os.scandir(directory) if entry.is_file()]
-    for filepath in all_files:
-        if os.path.basename(filepath).startswith(prefix):
-            return filepath
+    all_files = [entry.path for entry in os.scandir(directory) if (entry.is_file()) or (entry.is_dir())]
+    for path in all_files:
+        if os.path.basename(path).startswith(prefix):
+            return path
 
-    raise FileNotFoundError(f'No file found with prefix {prefix} in directory {directory}')
+    print(f'No file/directory found with prefix {prefix} in directory {directory}')
+    return None
 
-def read_dataset(info_table_filepath, complex_ec_directory, complex_af3_directory, label):
+def read_dataset(info_table_filepath, ec_directory, af3_directory, label):
     """
     Reads the dataset from the specified file paths.
 
     :param info_table_filepath:
-    :param complex_ec_directory:
-    :param complex_af3_directory:
+    :param ec_directory:
+    :param af3_directory:
     :param label: Label for the protein pairs (1 for positive, 0 for negative).
     :return: List of ProteinPair objects representing the dataset.
     """
 
     # Read uniprot ids for each pair of proteins from the info table
-    ec_directory = pathlib.Path(complex_ec_directory)
-    af3_directory = pathlib.Path(complex_af3_directory)
     protein_pairs = []
     try:
         df = pd.read_csv(info_table_filepath, sep=',')
@@ -107,17 +112,27 @@ def read_dataset(info_table_filepath, complex_ec_directory, complex_af3_director
                 bit_score=row['bit2']
             )
             prefix = row['prefix']
-            ec_filepath = get_filepath_from_prefix(ec_directory, prefix)
-            #af3_filepath = get_filepath_from_prefix(af3_directory, prefix)
+
+            ec_filepath = get_path_from_prefix(ec_directory, prefix)
+            if ec_filepath is None:
+                continue
+
+            af3_directory_single = get_path_from_prefix(af3_directory, prefix)
+            if af3_directory_single is None:
+                continue
+
             protein_pair = ProteinPair(
                 prefix=prefix,
                 protein1=protein1,
                 protein2=protein2,
                 ec_filepath=ec_filepath,
+                af3_directory=af3_directory_single,
                 label=label,
                 pairwise_identity=row['pairwise_identity'])
             protein_pairs.append(protein_pair)
+
             progress_bar(index, len(df))
+
     except Exception as e:
         raise ValueError(f'Error reading data: {e}') from e
 

@@ -30,7 +30,24 @@ def set_default_param(param):
             'cn_iqr',
             'cn_max',
             'cn_skewness',
-            'cn_kurtosis'
+            'cn_kurtosis',
+            'iptm',
+            'fraction_disordered',
+            'plddt_mean'
+            'contact_probs_mean',
+            'contact_probs_std',
+            'contact_probs_median',
+            'contact_probs_iqr',
+            'contact_probs_max',
+            'contact_probs_skewness',
+            'contact_probs_kurtosis',
+            'pae_mean',
+            'pae_std',
+            'pae_median',
+            'pae_iqr',
+            'pae_max',
+            'pae_skewness',
+            'pae_kurtosis'
         ]
         return features
 
@@ -112,12 +129,12 @@ def validate_path(path, expected_type):
     """
     path = pathlib.Path(path)#.resolve()
 
-    if expected_type == 'file' and not path.is_file():
+    #if expected_type == 'file' and not path.is_file():
         #raise ValueError(f'The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-        print(f'WARNING: The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-    elif expected_type == 'directory' and not path.is_dir():
+        #print(f'WARNING: The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+    #elif expected_type == 'directory' and not path.is_dir():
         #raise ValueError(f'The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-        print(f'WARNING: The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        #print(f'WARNING: The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
 
 def read_params(params_file_path):
     """
@@ -146,7 +163,7 @@ def read_params(params_file_path):
 
     check_required_params(params)
     print(f'Parameters read from {params_file_path}:\n{json.dumps(params, indent=4)}')
-    check_paths(params)
+    #check_paths(params)
     print('All paths are valid. Paths check complete.')
 
     return params

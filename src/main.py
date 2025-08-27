@@ -1,4 +1,5 @@
 import sys
+import time
 from src.data_processing.read_params import read_params
 import src.data_processing.read_dataset as read_dataset
 from src.machine_learning.training import train_interaction_classifier
@@ -16,10 +17,16 @@ def main():
     # Read the parameters from the params file
     params = read_params(params_file_path)
 
+    start_time = time.time()
+
     # Read the dataset based on the parameters
     if params['training_run']:
 
         training_protein_pairs = read_dataset.read_training_dataset(params)
+
+        read_in_time = time.time()
+        print(f"Time taken to read dataset: {read_in_time - start_time:.2f} seconds")
+        print(f"Total time so far: {read_in_time - start_time:.2f} seconds")
 
         # smaller debug sets
         #training_protein_pairs = training_protein_pairs[:1]  # Use only the first protein pair for debugging
@@ -27,9 +34,20 @@ def main():
 
         calculate_all_features(training_protein_pairs, params)
 
+        feature_calculation_time = time.time()
+        print(f"Time taken to calculate features: {feature_calculation_time - read_in_time:.2f} seconds")
+        print(f"Total time so far: {feature_calculation_time - start_time:.2f} seconds")
+
         train_interaction_classifier(training_protein_pairs, params)
 
-    #if params['prediction_run']:
+        training_evaluation_time = time.time()
+        print(f"Time taken to train and evaluate model: {training_evaluation_time - feature_calculation_time:.2f} seconds")
+        print(f"Total time taken: {training_evaluation_time - start_time:.2f} seconds")
+
+
+
+
+    # Todo: if params['prediction_run']:
 
         # prediction_protein_pairs = read_dataset.read_applied_dataset(params)
 

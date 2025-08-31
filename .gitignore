@@ -6,8 +6,12 @@ src/__pycache__/
 src/machine_learning/__pycache__/
 
 data/example_input/ppi_nov24_training_data/
+data/example_input/testing/
 data/example_setup_file/training_params.txt
 data/example_setup_file/training_params_ec_af_features.txt
 data/example_setup_file/training_params_ec_features.txt
 data/example_setup_file/training_params_af_features.txt
+data/example_setup_file/training_params_testing_params_parser.txt
 data/example_output/
+
+src/utils/testing.py

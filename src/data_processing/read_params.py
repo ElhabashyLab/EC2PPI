@@ -33,7 +33,7 @@ def set_default_param(param):
             'cn_kurtosis',
             'iptm',
             'fraction_disordered',
-            'plddt_mean'
+            'plddt_mean',
             'contact_probs_mean',
             'contact_probs_std',
             'contact_probs_median',
@@ -51,6 +51,21 @@ def set_default_param(param):
         ]
         return features
 
+def has_feature(feature_list, prefix=None, exact_match=None):
+    """
+    Checks if a feature is present in the feature list.
+
+    :param feature_list: List of features.
+    :param prefix: Optional prefix to check for.
+    :param exact_match: Optional exact match to check for.
+    :return: True if the feature is present, False otherwise.
+    """
+    if prefix:
+        return any(feature.startswith(prefix) for feature in feature_list)
+    if exact_match:
+        return exact_match in feature_list
+    return False
+
 def check_required_params(params):
     """
     Checks if all required parameters are present in the given dictionary.
@@ -66,35 +81,7 @@ def check_required_params(params):
         if param not in params:
             raise ValueError(f'Missing required parameter: {param}')
     if not (params['training_run'] or params['prediction_run']):
-        raise ValueError('At least one of training_run or prediction_run must be set to True in the parameters.')
-
-    if params['training_run']:
-        required_params_training = ['positive_training_complex_info_table_filepath',
-                                    'positive_training_complex_ec_directory',
-                                    'positive_training_complex_af3_directory',
-                                    'negative_training_complex_info_table_filepath',
-                                    'negative_training_complex_ec_directory',
-                                    'negative_training_complex_af3_directory',
-                                    'export_directory']
-        for param in required_params_training:
-            if param not in params:
-                raise ValueError(f'Missing required training parameter: {param}')
-        if not os.path.exists(params['export_directory']):
-            os.makedirs(params['export_directory'])
-
-    if params['prediction_run']:
-        required_params_prediction = ['prediction_complex_info_table_filepath',
-                                      'prediction_complex_ec_directory',
-                                      'prediction_complex_af3_directory',
-                                      'model_import_filepath',
-                                      'prediction_export_filepath']
-        for param in required_params_prediction:
-            if param not in params:
-                raise ValueError(f'Missing required prediction parameter: {param}')
-        if params['model_import_filepath'] == 'latest':
-            if 'model_export_filepath' not in params:
-                raise ValueError('If model_import_filepath is set to "latest", model_export_filepath must also be provided.')
-            params['model_import_filepath'] = params['model_export_filepath']
+        raise ValueError('At least one of training_run or prediction_run must be set to true in the parameters.')
 
     # Parsing optional parameters
     optional_params = ['training_parameters', 'feature_list']
@@ -103,21 +90,77 @@ def check_required_params(params):
             params[param] = 'default'
         if params[param] == 'default':
             params[param] = set_default_param(param)
+        if param == 'feature_list' and not isinstance(params[param], list):
+            raise ValueError('feature_list must be a list of features or "default".')
+        if param == 'training_parameters' and not isinstance(params[param], dict):
+            raise ValueError('training_parameters must be a dictionary of parameters or "default".')
+
+    # Check what features are included
+    if (
+        not has_feature(params['feature_list'], exact_match='iptm')
+        and not has_feature(params['feature_list'], exact_match='fraction_disordered')
+        and not has_feature(params['feature_list'], exact_match='plddt_mean')
+        and not has_feature(params['feature_list'], prefix='pae_')
+        and not has_feature(params['feature_list'], prefix='contact_probs_')
+        ):
+        params['include_af3'] = False
+    else:
+        params['include_af3'] = True
+
+    if not has_feature(params['feature_list'], prefix='cn_'):
+        params['include_ec'] = False
+    else:
+        params['include_ec'] = True
+
+    # Checking required parameters for training and validate paths
+    if params['training_run']:
+        required_params_training = ['positive_training_complex_info_table_filepath',
+                                    'negative_training_complex_info_table_filepath',
+                                    'export_directory']
+
+        if params['include_af3']:
+            required_params_training += ['positive_training_complex_af3_directory',
+                                         'negative_training_complex_af3_directory']
+        if params['include_ec']:
+            required_params_training += ['positive_training_complex_ec_directory',
+                                         'negative_training_complex_ec_directory']
+
+        for param in required_params_training:
+            if param not in params:
+                raise ValueError(f'Missing required training parameter: {param}')
+            if param == 'export_directory':
+                if not os.path.exists(params['export_directory']):
+                    os.makedirs(params['export_directory'])
+            if param.endswith('_filepath'):
+                validate_path(params[param], 'file')
+            elif param.endswith('_directory'):
+                validate_path(params[param], 'directory')
+
+    # Checking required parameters for prediction and validate paths
+    if params['prediction_run']:
+        required_params_prediction = ['prediction_complex_info_table_filepath',
+                                      'model_import_filepath',
+                                      'prediction_export_filepath']
+        if params['include_af3']:
+            required_params_prediction.append('prediction_complex_af3_directory')
+
+        if params['include_ec']:
+            required_params_prediction.append('prediction_complex_ec_directory')
+
+        for param in required_params_prediction:
+            if param not in params:
+                raise ValueError(f'Missing required prediction parameter: {param}')
+            if param.endswith('_filepath'):
+                validate_path(params[param], 'file')
+            elif param.endswith('_directory'):
+                validate_path(params[param], 'directory')
+
+        if params['model_import_filepath'] == 'latest':
+            if 'model_export_filepath' not in params:
+                raise ValueError('If model_import_filepath is set to "latest", model_export_filepath must also be provided.')
+            params['model_import_filepath'] = params['model_export_filepath']
 
     print('All required parameters are present. Check complete.')
-
-
-def check_paths(params):
-    """ Checks if the file paths in the parameters dictionary are valid.
-    :param params: Dictionary containing parameters.
-    :raises ValueError: If any path is invalid.
-    """
-
-    for key, value in params.items():
-        if key.endswith('_filepath'):
-            validate_path(value, 'file')
-        elif key.endswith('_directory'):
-            validate_path(value, 'directory')
 
 def validate_path(path, expected_type):
     """
@@ -129,12 +172,12 @@ def validate_path(path, expected_type):
     """
     path = pathlib.Path(path)#.resolve()
 
-    #if expected_type == 'file' and not path.is_file():
+    if expected_type == 'file' and not path.is_file():
         #raise ValueError(f'The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-        #print(f'WARNING: The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-    #elif expected_type == 'directory' and not path.is_dir():
+        print(f'WARNING: The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+    elif expected_type == 'directory' and not path.is_dir():
         #raise ValueError(f'The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-        #print(f'WARNING: The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        print(f'WARNING: The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
 
 def read_params(params_file_path):
     """
@@ -155,6 +198,8 @@ def read_params(params_file_path):
         d = d.strip()
         if not d.startswith('#') and len(d) > 0:
             json_string += d + '\n'
+    if json_string.endswith(',\n}\n'):
+        json_string = json_string[:-4] + '\n}\n'
 
     params = json.loads(json_string)
 
@@ -163,7 +208,6 @@ def read_params(params_file_path):
 
     check_required_params(params)
     print(f'Parameters read from {params_file_path}:\n{json.dumps(params, indent=4)}')
-    #check_paths(params)
     print('All paths are valid. Paths check complete.')
 
     return params

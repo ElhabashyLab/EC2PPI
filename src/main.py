@@ -30,7 +30,7 @@ def main():
 
         # smaller debug sets
         #training_protein_pairs = training_protein_pairs[:1]  # Use only the first protein pair for debugging
-        #training_protein_pairs = training_protein_pairs[650:-650]
+        training_protein_pairs = training_protein_pairs[650:-650]
 
         calculate_all_features(training_protein_pairs, params)
 

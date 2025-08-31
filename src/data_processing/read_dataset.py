@@ -1,7 +1,6 @@
 import os
 import pandas as pd
-from src.utils.protein import Protein
-from src.utils.protein_pair import ProteinPair
+from src.utils.proteins import Protein, ProteinPair
 from src.utils.print import progress_bar
 
 def read_training_dataset(params):
@@ -12,30 +11,45 @@ def read_training_dataset(params):
     :return: List of PPI objects representing the training dataset.
     """
 
-    # Extract parameters for reading the positive dataset
+    # Extract parameters for reading the positive and negative dataset
+    feature_list = params['feature_list']
+
     positive_training_complex_info_table_filepath = params['positive_training_complex_info_table_filepath']
-    positive_training_complex_ec_directory = params['positive_training_complex_ec_directory']
-    positive_training_complex_af3_directory = params['positive_training_complex_af3_directory']
+    negative_training_complex_info_table_filepath = params['negative_training_complex_info_table_filepath']
+
+    if params['include_ec']:
+        positive_training_complex_ec_directory = params['positive_training_complex_ec_directory']
+        negative_training_complex_ec_directory = params['negative_training_complex_ec_directory']
+    else:
+        positive_training_complex_ec_directory = None
+        negative_training_complex_ec_directory = None
+
+    if params['include_af3']:
+        positive_training_complex_af3_directory = params['positive_training_complex_af3_directory']
+        negative_training_complex_af3_directory = params['negative_training_complex_af3_directory']
+    else:
+        positive_training_complex_af3_directory = None
+        negative_training_complex_af3_directory = None
+
+
+
+
 
     # Read the positive training dataset
     print('Reading positive training dataset...')
     positive_protein_pairs = read_dataset(
         info_table_filepath=positive_training_complex_info_table_filepath,
+        feature_list=feature_list,
         ec_directory=positive_training_complex_ec_directory,
         af3_directory=positive_training_complex_af3_directory,
         label=1
     )
 
-
-    # Extract parameters for reading the negative dataset
-    negative_training_complex_info_table_filepath = params['negative_training_complex_info_table_filepath']
-    negative_training_complex_ec_directory = params['negative_training_complex_ec_directory']
-    negative_training_complex_af3_directory = params['negative_training_complex_af3_directory']
-
     # Read the negative training dataset
     print('Reading negative training dataset...')
     negative_protein_pairs = read_dataset(
         info_table_filepath=negative_training_complex_info_table_filepath,
+        feature_list=feature_list,
         ec_directory=negative_training_complex_ec_directory,
         af3_directory=negative_training_complex_af3_directory,
         label=0
@@ -81,14 +95,14 @@ def get_path_from_prefix(directory, prefix):
     print(f'No file/directory found with prefix {prefix} in directory {directory}')
     return None
 
-def read_dataset(info_table_filepath, ec_directory, af3_directory, label):
+def read_dataset(info_table_filepath, label, feature_list, ec_directory, af3_directory):
     """
     Reads the dataset from the specified file paths.
 
     :param info_table_filepath:
-    :param ec_directory:
-    :param af3_directory:
-    :param label: Label for the protein pairs (1 for positive, 0 for negative).
+    :param label: Label to assign to all protein pairs in this dataset (1 for positive, 0 for negative).
+    :param ec_directory: Directory containing EC files.
+    :param af3_directory: Directory containing AF3 files.
     :return: List of ProteinPair objects representing the dataset.
     """
 
@@ -96,39 +110,49 @@ def read_dataset(info_table_filepath, ec_directory, af3_directory, label):
     protein_pairs = []
     try:
         df = pd.read_csv(info_table_filepath, sep=',')
+
         for index, row in df.iterrows():
-            protein1 = Protein(
-                uniprot_id=row['uid1'],
-                n_eff=row['Neff1'],
-                n_eff_l=row['NeffL1'],
-                sequence_length=row['seq1_len'],
-                bit_score=row['bit1']
-            )
-            protein2 = Protein(
-                uniprot_id=row['uid2'],
-                n_eff=row['Neff2'],
-                n_eff_l=row['NeffL2'],
-                sequence_length=row['seq2_len'],
-                bit_score=row['bit2']
-            )
+
+            protein1 = Protein(uniprot_id=row['uid1'])
+            if 'Neff1' in df.columns:
+                protein1.n_eff = row['Neff1']
+            if 'NeffL1' in df.columns:
+                protein1.n_eff_l = row['NeffL1']
+            if 'seq1_len' in df.columns:
+                protein1.sequence_length = row['seq1_len']
+            if 'bit1' in df.columns:
+                protein1.bit_score = row['bit1']
+
+            protein2 = Protein(uniprot_id=row['uid2'])
+            if 'Neff2' in df.columns:
+                protein2.n_eff = row['Neff2']
+            if 'NeffL2' in df.columns:
+                protein2.n_eff_l = row['NeffL2']
+            if 'seq2_len' in df.columns:
+                protein2.sequence_length = row['seq2_len']
+            if 'bit2' in df.columns:
+                protein2.bit_score = row['bit2']
+
             prefix = row['prefix']
-
-            ec_filepath = get_path_from_prefix(ec_directory, prefix)
-            if ec_filepath is None:
-                continue
-
-            af3_directory_single = get_path_from_prefix(af3_directory, prefix)
-            if af3_directory_single is None:
-                continue
-
             protein_pair = ProteinPair(
                 prefix=prefix,
                 protein1=protein1,
                 protein2=protein2,
-                ec_filepath=ec_filepath,
-                af3_directory=af3_directory_single,
                 label=label,
                 pairwise_identity=row['pairwise_identity'])
+
+            if ec_directory:
+                ec_filepath = get_path_from_prefix(ec_directory, prefix)
+                protein_pair.ec_filepath = ec_filepath
+                if ec_filepath is None:
+                    continue
+
+            if af3_directory:
+                af3_directory_single = get_path_from_prefix(af3_directory, prefix)
+                protein_pair.af3_directory = af3_directory_single
+                if af3_directory_single is None:
+                    continue
+
             protein_pairs.append(protein_pair)
 
             progress_bar(index, len(df))

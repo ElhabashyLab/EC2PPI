@@ -76,7 +76,32 @@ def read_applied_dataset(params):
     :param params: Dictionary containing parameters for reading the dataset.
     :return: List of PPI objects representing the use case dataset.
     """
-    pass
+
+    # Extract parameters for reading the prediction dataset
+    feature_list = params['feature_list']
+    prediction_complex_info_table_filepath = params['prediction_complex_info_table_filepath']
+
+    if params['include_ec']:
+        prediction_complex_ec_directory = params['prediction_complex_ec_directory']
+    else:
+        prediction_complex_ec_directory = None
+    if params['include_af3']:
+        prediction_complex_af3_directory = params['prediction_complex_af3_directory']
+    else:
+        prediction_complex_af3_directory = None
+
+    # Read the prediction dataset
+    print('Reading prediction dataset...')
+    protein_pairs = read_dataset(
+        info_table_filepath=prediction_complex_info_table_filepath,
+        feature_list=feature_list,
+        ec_directory=prediction_complex_ec_directory,
+        af3_directory=prediction_complex_af3_directory,
+        label=None  # No label for prediction dataset
+    )
+
+    print(f'Read {len(protein_pairs)} protein pairs for prediction.')
+    return protein_pairs
 
 def get_path_from_prefix(directory, prefix):
     """
@@ -101,6 +126,7 @@ def read_dataset(info_table_filepath, label, feature_list, ec_directory, af3_dir
 
     :param info_table_filepath:
     :param label: Label to assign to all protein pairs in this dataset (1 for positive, 0 for negative).
+    :param feature_list: List of features to calculate.
     :param ec_directory: Directory containing EC files.
     :param af3_directory: Directory containing AF3 files.
     :return: List of ProteinPair objects representing the dataset.

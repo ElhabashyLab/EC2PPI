@@ -156,9 +156,11 @@ def check_required_params(params):
                 validate_path(params[param], 'directory')
 
         if params['model_import_filepath'] == 'latest':
-            if 'model_export_filepath' not in params:
-                raise ValueError('If model_import_filepath is set to "latest", model_export_filepath must also be provided.')
-            params['model_import_filepath'] = params['model_export_filepath']
+            if 'export_directory' not in params:
+                raise ValueError('If model_import_filepath is set to "latest", export_directory must also be provided.')
+            validate_path(params['export_directory'], 'directory')
+            validate_path(os.path.join(params['export_directory'], 'best_model.pkl'), 'file')
+            params['model_import_filepath'] = os.path.join(params['export_directory'], 'best_model.pkl')
 
     print('All required parameters are present. Check complete.')
 

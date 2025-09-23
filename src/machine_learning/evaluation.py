@@ -314,7 +314,11 @@ def evaluate_classifier(clf, X_test, y_test, export_directory, feature_list):
     precision, recall = plot_precision_recall_curve(y_test, y_prob, export_directory)
 
     # Print feature importance
-    sorted_feature_list, sorted_feature_importance = plot_feature_importance(clf, feature_list, export_directory)
+    if hasattr(clf, 'feature_importances_'):
+        sorted_feature_list, sorted_feature_importance = plot_feature_importance(clf, feature_list, export_directory)
+    else:
+        sorted_feature_list = feature_list
+        sorted_feature_importance = []
 
     # Save evaluation results
     save_evaluation_results(export_directory, fpr, tpr, roc_auc, precision, recall, sorted_feature_list, sorted_feature_importance)

@@ -7,6 +7,11 @@ from src.utils.proteins import ProteinPair
 from src.machine_learning.evaluation import evaluate_classifier
 from src.machine_learning.evaluation import plot_baseline
 def train_interaction_classifier(protein_pairs: list[ProteinPair], params):
+    """Trains and evaluates a classifier for protein-protein interaction prediction.
+
+    :param protein_pairs: List of ProteinPair objects with calculated features and labels.
+    :param params: Dictionary containing parameters for training and evaluation.
+    """
 
     X_train, X_test, y_train, y_test = prepare_train_test_data(protein_pairs, export_directory=params['export_directory'], feature_list=params['feature_list'])
 
@@ -58,7 +63,7 @@ def random_forest_classifier():
         estimator=rf,
         param_grid=param_grid,
         cv=5,
-        scoring='accuracy',
+        scoring='roc_auc',
         n_jobs=-1
     )
 

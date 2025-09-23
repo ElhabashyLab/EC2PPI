@@ -19,11 +19,6 @@ def set_default_param(param):
         return param_grid
     elif param == 'feature_list':
         features = [
-            'n_eff',
-            'n_eff_l',
-            'sequence_length',
-            'bit_score',
-            'pairwise_identity',
             'cn_mean',
             'cn_std',
             'cn_median',

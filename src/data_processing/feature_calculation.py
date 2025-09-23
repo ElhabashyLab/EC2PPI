@@ -137,30 +137,21 @@ def calculate_features(protein_pair: ProteinPair, feature_list: list):
     """
     features = []
 
-    if 'n_eff' in feature_list:
-        features.append(protein_pair.protein1.n_eff)
-        features.append(protein_pair.protein2.n_eff)
-    if 'n_eff_l' in feature_list:
-        features.append(protein_pair.protein1.n_eff_l)
-        features.append(protein_pair.protein2.n_eff_l)
-    if 'sequence_length' in feature_list:
-        features.append(protein_pair.protein1.sequence_length)
-        features.append(protein_pair.protein2.sequence_length)
-    if 'bit_score' in feature_list:
-        features.append(protein_pair.protein1.bit_score)
-        features.append(protein_pair.protein2.bit_score)
-    if 'pairwise_identity' in feature_list:
-        features.append(protein_pair.pairwise_identity)
-
     # calculate features from EC file
     features.extend(features_from_ec_file(protein_pair.ec_filepath, feature_list))
 
     # calculate features from AF3 file
     features.extend(features_from_af3_directory(protein_pair.af3_directory, feature_list))
 
+    # add custom features if available
+    if protein_pair.custom_features:
+        for feature in feature_list:
+            if feature in protein_pair.custom_features:
+                features.append(protein_pair.custom_features[feature])
+
     return features
 
-def calculate_all_features(protein_pairs, params, save_features: bool = False):
+def calculate_all_features(protein_pairs, params, save_features: bool = True):
     """Calculate features for all protein pairs in the list.
 
     :param protein_pairs: List of ProteinPair objects.

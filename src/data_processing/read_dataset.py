@@ -12,7 +12,6 @@ def read_training_dataset(params):
     """
 
     # Extract parameters for reading the positive and negative dataset
-    feature_list = params['feature_list']
 
     positive_training_complex_info_table_filepath = params['positive_training_complex_info_table_filepath']
     negative_training_complex_info_table_filepath = params['negative_training_complex_info_table_filepath']
@@ -39,7 +38,6 @@ def read_training_dataset(params):
     print('Reading positive training dataset...')
     positive_protein_pairs = read_dataset(
         info_table_filepath=positive_training_complex_info_table_filepath,
-        feature_list=feature_list,
         ec_directory=positive_training_complex_ec_directory,
         af3_directory=positive_training_complex_af3_directory,
         label=1
@@ -49,7 +47,6 @@ def read_training_dataset(params):
     print('Reading negative training dataset...')
     negative_protein_pairs = read_dataset(
         info_table_filepath=negative_training_complex_info_table_filepath,
-        feature_list=feature_list,
         ec_directory=negative_training_complex_ec_directory,
         af3_directory=negative_training_complex_af3_directory,
         label=0
@@ -78,7 +75,6 @@ def read_applied_dataset(params):
     """
 
     # Extract parameters for reading the prediction dataset
-    feature_list = params['feature_list']
     prediction_complex_info_table_filepath = params['prediction_complex_info_table_filepath']
 
     if params['include_ec']:
@@ -94,7 +90,6 @@ def read_applied_dataset(params):
     print('Reading prediction dataset...')
     protein_pairs = read_dataset(
         info_table_filepath=prediction_complex_info_table_filepath,
-        feature_list=feature_list,
         ec_directory=prediction_complex_ec_directory,
         af3_directory=prediction_complex_af3_directory,
         label=None  # No label for prediction dataset
@@ -120,13 +115,12 @@ def get_path_from_prefix(directory, prefix):
     print(f'No file/directory found with prefix {prefix} in directory {directory}')
     return None
 
-def read_dataset(info_table_filepath, label, feature_list, ec_directory, af3_directory):
+def read_dataset(info_table_filepath, label, ec_directory, af3_directory):
     """
     Reads the dataset from the specified file paths.
 
     :param info_table_filepath:
     :param label: Label to assign to all protein pairs in this dataset (1 for positive, 0 for negative).
-    :param feature_list: List of features to calculate.
     :param ec_directory: Directory containing EC files.
     :param af3_directory: Directory containing AF3 files.
     :return: List of ProteinPair objects representing the dataset.
@@ -140,32 +134,20 @@ def read_dataset(info_table_filepath, label, feature_list, ec_directory, af3_dir
         for index, row in df.iterrows():
 
             protein1 = Protein(uniprot_id=row['uid1'])
-            if 'Neff1' in df.columns:
-                protein1.n_eff = row['Neff1']
-            if 'NeffL1' in df.columns:
-                protein1.n_eff_l = row['NeffL1']
-            if 'seq1_len' in df.columns:
-                protein1.sequence_length = row['seq1_len']
-            if 'bit1' in df.columns:
-                protein1.bit_score = row['bit1']
-
             protein2 = Protein(uniprot_id=row['uid2'])
-            if 'Neff2' in df.columns:
-                protein2.n_eff = row['Neff2']
-            if 'NeffL2' in df.columns:
-                protein2.n_eff_l = row['NeffL2']
-            if 'seq2_len' in df.columns:
-                protein2.sequence_length = row['seq2_len']
-            if 'bit2' in df.columns:
-                protein2.bit_score = row['bit2']
 
             prefix = row['prefix']
+
+            custom_features = row.drop(labels=['prefix', 'uid1', 'uid2']).to_dict()
+            if not custom_features:
+                custom_features = None
+
             protein_pair = ProteinPair(
                 prefix=prefix,
                 protein1=protein1,
                 protein2=protein2,
                 label=label,
-                pairwise_identity=row['pairwise_identity'])
+                custom_features=custom_features)
 
             if ec_directory:
                 ec_filepath = get_path_from_prefix(ec_directory, prefix)

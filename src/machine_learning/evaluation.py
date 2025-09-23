@@ -14,20 +14,6 @@ def get_feature_names(feature_list):
     """
     feature_names = []
 
-    if 'n_eff' in feature_list:
-        feature_names.append('n_eff_protein1')
-        feature_names.append('n_eff_protein2')
-    if 'n_eff_l' in feature_list:
-        feature_names.append('n_eff_l_protein1')
-        feature_names.append('n_eff_l_protein2')
-    if 'sequence_length' in feature_list:
-        feature_names.append('sequence_length_protein1')
-        feature_names.append('sequence_length_protein2')
-    if 'bit_score' in feature_list:
-        feature_names.append('bit_score_protein1')
-        feature_names.append('bit_score_protein2')
-    if 'pairwise_identity' in feature_list:
-        feature_names.append('pairwise_identity')
     if 'cn_mean' in feature_list:
         feature_names.append('cn_mean')
     if 'cn_std' in feature_list:
@@ -76,6 +62,11 @@ def get_feature_names(feature_list):
         feature_names.append('pae_skewness')
     if 'pae_kurtosis' in feature_list:
         feature_names.append('pae_kurtosis')
+
+    # Append any remaining features that were not explicitly handled
+    for feature in feature_list:
+        if feature not in feature_names:
+            feature_names.append(feature)
 
     return feature_names
 

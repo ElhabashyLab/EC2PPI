@@ -1,7 +1,7 @@
 import sklearn
 import joblib
 import pandas as pd
-from src.utils.proteins import ProteinPair
+from src.utils.protein_pair import ProteinPair
 
 def make_predictions(protein_pairs: list[ProteinPair], params):
     """Make predictions on a list of ProteinPair objects using a trained model.

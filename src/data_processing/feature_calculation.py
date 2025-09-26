@@ -2,7 +2,7 @@ import pandas as pd
 import json
 import os
 import numpy as np
-from src.utils.proteins import ProteinPair
+from src.utils.protein_pair import ProteinPair
 from src.utils.print import progress_bar
 from joblib import Parallel, delayed
 
@@ -138,10 +138,12 @@ def calculate_features(protein_pair: ProteinPair, feature_list: list):
     features = []
 
     # calculate features from EC file
-    features.extend(features_from_ec_file(protein_pair.ec_filepath, feature_list))
+    if protein_pair.ec_filepath:
+        features.extend(features_from_ec_file(protein_pair.ec_filepath, feature_list))
 
     # calculate features from AF3 file
-    features.extend(features_from_af3_directory(protein_pair.af3_directory, feature_list))
+    if protein_pair.af3_directory:
+        features.extend(features_from_af3_directory(protein_pair.af3_directory, feature_list))
 
     # add custom features if available
     if protein_pair.custom_features:

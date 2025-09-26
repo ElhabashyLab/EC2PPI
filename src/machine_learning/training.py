@@ -3,9 +3,9 @@ import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.model_selection import GridSearchCV
-from src.utils.proteins import ProteinPair
+from src.utils.protein_pair import ProteinPair
 from src.machine_learning.evaluation import evaluate_classifier
-from src.machine_learning.evaluation import plot_baseline
+from src.utils.testing import plot_baseline
 def train_interaction_classifier(protein_pairs: list[ProteinPair], params):
     """Trains and evaluates a classifier for protein-protein interaction prediction.
 

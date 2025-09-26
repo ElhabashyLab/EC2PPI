@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from src.utils.proteins import Protein, ProteinPair
+from src.utils.protein_pair import ProteinPair
 from src.utils.print import progress_bar
 
 def read_training_dataset(params):
@@ -133,8 +133,8 @@ def read_dataset(info_table_filepath, label, ec_directory, af3_directory):
 
         for index, row in df.iterrows():
 
-            protein1 = Protein(uniprot_id=row['uid1'])
-            protein2 = Protein(uniprot_id=row['uid2'])
+            uid1=row['uid1']
+            uid2=row['uid2']
 
             prefix = row['prefix']
 
@@ -144,8 +144,8 @@ def read_dataset(info_table_filepath, label, ec_directory, af3_directory):
 
             protein_pair = ProteinPair(
                 prefix=prefix,
-                protein1=protein1,
-                protein2=protein2,
+                uid1=uid1,
+                uid2=uid2,
                 label=label,
                 custom_features=custom_features)
 

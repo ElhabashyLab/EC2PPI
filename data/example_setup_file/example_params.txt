@@ -1,0 +1,51 @@
+{
+#===Required inputs===
+
+# training run (true / false)
+    "training_run" : true,
+
+# prediction run (true / false)
+    "prediction_run" : true,
+
+#===Training run input===
+
+#+++Positive dataset+++
+    "positive_training_complex_info_table_filepath" : "<path>",
+    "positive_training_complex_ec_directory" : "<path>",
+    "positive_training_complex_af3_directory" : "<path>",
+#++++++++++++++++++++++
+
+#---Negative dataset---
+    "negative_training_complex_info_table_filepath" : "<path>",
+    "negative_training_complex_ec_directory" : "<path>",
+    "negative_training_complex_af3_directory" : "<path>",
+#----------------------
+
+# training model and evaluation export
+    "export_directory" : "<path>",
+
+#===Prediction run input===
+    "prediction_complex_info_table_filepath" : "<path>",
+    "prediction_complex_ec_directory" : "<path>",
+    "prediction_complex_af3_directory" : "<path>",
+
+# model import filepath or "latest" for latest trained model (stored in export directory as pickle file (.pkl))
+    "model_import_filepath" : "latest",
+
+# results export
+    "prediction_export_filepath" : "<path>",
+
+#===Optional parameters===
+
+# parallelize feature calculation (default: true / false)
+    "parallelized_feature_calculation" : default,
+
+# classifier type (default: random_forest / hist_gradient_boost)
+    "classifier_type" : "default",
+
+# training parameters (default: uses default parameters / nested json parameter grid)
+    "training_parameters" : "default",
+
+# features to include (default: all features / list of features)
+    "feature_list" : "default"
+}

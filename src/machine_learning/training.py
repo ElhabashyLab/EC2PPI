@@ -5,7 +5,9 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.model_selection import GridSearchCV
 from src.utils.protein_pair import ProteinPair
 from src.machine_learning.evaluation import evaluate_classifier
-from src.utils.testing import plot_baseline
+
+
+
 def train_interaction_classifier(protein_pairs: list[ProteinPair], params):
     """Trains and evaluates a classifier for protein-protein interaction prediction.
 
@@ -13,10 +15,12 @@ def train_interaction_classifier(protein_pairs: list[ProteinPair], params):
     :param params: Dictionary containing parameters for training and evaluation.
     """
 
-    X_train, X_test, y_train, y_test = prepare_train_test_data(protein_pairs, export_directory=params['export_directory'], feature_list=params['feature_list'])
+    X_train, X_test, y_train, y_test = prepare_train_test_data(protein_pairs)
 
-    clf = random_forest_classifier()
-    #clf = hist_gradient_boosting_classifier()
+    if params['classifier_type'] == 'random_forest':
+        clf = random_forest_classifier(params)
+    elif params['classifier_type'] == 'hist_gradient_boosting':
+        clf = hist_gradient_boosting_classifier(params)
 
     clf.fit(X_train, y_train)
 
@@ -27,7 +31,7 @@ def train_interaction_classifier(protein_pairs: list[ProteinPair], params):
     joblib.dump(best_model, f"{params['export_directory']}/best_model.pkl")
     print(f'Model saved to {params["export_directory"]}')
 
-def prepare_train_test_data(protein_pairs: list[ProteinPair], split_ratio: float = 0.2, feature_list=None, export_directory: str = None):
+def prepare_train_test_data(protein_pairs: list[ProteinPair], split_ratio: float = 0.2):
     """Prepares the training and test datasets from a list of ProteinPair objects.
 
     :param protein_pairs: List of ProteinPair objects.
@@ -39,22 +43,15 @@ def prepare_train_test_data(protein_pairs: list[ProteinPair], split_ratio: float
         features.append(pair.features)
         labels.append(pair.label)
 
-    #plot_baseline(features, labels, feature_list, export_directory, dropna=True, filename="feature_baselines.png")
+    return sklearn.model_selection.train_test_split(features, labels, test_size=split_ratio, random_state=2024)
 
-    return sklearn.model_selection.train_test_split(features, labels, test_size=split_ratio, random_state=240)
-
-def random_forest_classifier():
+def random_forest_classifier(params):
     """Creates a Random Forest classifier with the specified parameters.
 
+    :param params: Dictionary containing parameters for the classifier.
     :return: Random Forest classifier.
     """
-    param_grid = {
-        'n_estimators': [100, 200, 500],
-        'max_depth': [None, 10, 20],
-        'max_features': ['sqrt', 'log2', 0.5],
-        'min_samples_split': [2, 5, 10]
-    }
-    # Todo: import param_grid from params.txt
+    param_grid = params['training_parameters']
 
     rf = RandomForestClassifier(random_state=1)
 
@@ -69,20 +66,15 @@ def random_forest_classifier():
 
     return grid_search
 
-def hist_gradient_boosting_classifier():
+def hist_gradient_boosting_classifier(params):
     """Creates a HistGradientBoosting classifier with the specified parameters.
 
+    :param params: Dictionary containing parameters for the classifier.
     :return: HistGradientBoosting classifier.
     """
-    param_grid = {
-        'max_iter': [100, 200, 500],
-        'max_depth': [None, 10, 20],
-        'learning_rate': [0.01, 0.1, 0.2],
-        "min_samples_leaf": [10, 20, 50]
-    }
-    # Todo: import param_grid from params.txt
+    param_grid = params['training_parameters']
 
-    hgb = HistGradientBoostingClassifier(random_state=42)
+    hgb = HistGradientBoostingClassifier(random_state=1)
 
     # GridSearchCV with 5-fold cross-validation
     grid_search = GridSearchCV(

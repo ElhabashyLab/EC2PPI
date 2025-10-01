@@ -2,20 +2,31 @@ import os
 import json
 import pathlib
 
-def set_default_param(param):
+def set_default_param(param, params):
     """
     Sets default values for parameters that are not provided in the given dictionary.
 
     :param param: Parameter to be set to default.
+    :param params: Dictionary containing parameters.
     :return: Default values for the parameter.
     """
     if param == 'training_parameters':
-        param_grid = {
-        'n_estimators': [100, 200, 500],
-        'max_depth': [None, 10, 20],
-        'max_features': ['sqrt', 'log2'],
-        'min_samples_split': [2, 5, 10]
-        }
+        if params['classifier_type'] == 'random_forest':
+            param_grid = {
+                'n_estimators': [100, 200, 500],
+                'max_depth': [None, 10, 20],
+                'max_features': ['sqrt', 'log2', 0.5],
+                'min_samples_split': [2, 5, 10]
+            }
+        elif params['classifier_type'] == 'hist_gradient_boosting':
+            param_grid = {
+                'max_iter': [100, 200, 500],
+                'max_depth': [None, 10, 20],
+                'learning_rate': [0.01, 0.1, 0.2],
+                "min_samples_leaf": [10, 20, 50]
+            }
+        else :
+            raise ValueError(f'Unsupported classifier type: {params["classifier_type"]}. Supported types are "random_forest" and "hist_gradient_boosting".')
         return param_grid
     elif param == 'feature_list':
         features = [
@@ -26,6 +37,7 @@ def set_default_param(param):
             'cn_max',
             'cn_skewness',
             'cn_kurtosis',
+            'ptm',
             'iptm',
             'fraction_disordered',
             'plddt_mean',
@@ -40,11 +52,15 @@ def set_default_param(param):
             'pae_std',
             'pae_median',
             'pae_iqr',
-            'pae_max',
+            'pae_min',
             'pae_skewness',
             'pae_kurtosis'
         ]
         return features
+    elif param == 'classifier_type':
+        return 'random_forest'
+    elif param == 'parallelized_feature_calculation':
+        return True
 
 def has_feature(feature_list, prefix=None, exact_match=None):
     """
@@ -79,16 +95,22 @@ def check_required_params(params):
         raise ValueError('At least one of training_run or prediction_run must be set to true in the parameters.')
 
     # Parsing optional parameters
-    optional_params = ['training_parameters', 'feature_list']
+    optional_params = ['classifier_type', 'training_parameters', 'feature_list', 'parallelized_feature_calculation']
     for param in optional_params:
         if param not in params:
             params[param] = 'default'
         if params[param] == 'default':
-            params[param] = set_default_param(param)
-        if param == 'feature_list' and not isinstance(params[param], list):
+            params[param] = set_default_param(param, params)
+        elif param == 'feature_list' and not isinstance(params[param], list):
             raise ValueError('feature_list must be a list of features or "default".')
-        if param == 'training_parameters' and not isinstance(params[param], dict):
+        elif param == 'training_parameters' and not isinstance(params[param], dict):
             raise ValueError('training_parameters must be a dictionary of parameters or "default".')
+        elif param == 'classifier_type' and params[param] not in ['random_forest', 'hist_gradient_boosting']:
+            raise ValueError('classifier_type must be either "random_forest", "hist_gradient_boosting", or "default".')
+        elif param == 'parallelized_feature_calculation' and not isinstance(params[param], bool):
+            raise ValueError('parallelized_feature_calculation must be either true, false, or "default".')
+
+
 
     # Check what features are included
     if (
@@ -124,8 +146,7 @@ def check_required_params(params):
             if param not in params:
                 raise ValueError(f'Missing required training parameter: {param}')
             if param == 'export_directory':
-                if not os.path.exists(params['export_directory']):
-                    os.makedirs(params['export_directory'])
+                os.makedirs(params['export_directory'], exist_ok=True)
             if param.endswith('_filepath'):
                 validate_path(params[param], 'file')
             elif param.endswith('_directory'):
@@ -135,7 +156,7 @@ def check_required_params(params):
     if params['prediction_run']:
         required_params_prediction = ['prediction_complex_info_table_filepath',
                                       'model_import_filepath',
-                                      'prediction_export_filepath']
+                                      'prediction_export_directory']
         if params['include_af3']:
             required_params_prediction.append('prediction_complex_af3_directory')
 
@@ -145,7 +166,11 @@ def check_required_params(params):
         for param in required_params_prediction:
             if param not in params:
                 raise ValueError(f'Missing required prediction parameter: {param}')
-            if param.endswith('_filepath'):
+            if param == 'prediction_export_directory':
+                os.makedirs(params['prediction_export_directory'], exist_ok=True)
+            elif param == 'model_import_filepath' and params['model_import_filepath'] == 'latest':
+                continue
+            elif param.endswith('_filepath'):
                 validate_path(params[param], 'file')
             elif param.endswith('_directory'):
                 validate_path(params[param], 'directory')
@@ -153,8 +178,9 @@ def check_required_params(params):
         if params['model_import_filepath'] == 'latest':
             if 'export_directory' not in params:
                 raise ValueError('If model_import_filepath is set to "latest", export_directory must also be provided.')
-            validate_path(params['export_directory'], 'directory')
-            validate_path(os.path.join(params['export_directory'], 'best_model.pkl'), 'file')
+            if not params['training_run']:
+                validate_path(params['export_directory'], 'directory')
+                validate_path(os.path.join(params['export_directory'], 'best_model.pkl'), 'file')
             params['model_import_filepath'] = os.path.join(params['export_directory'], 'best_model.pkl')
 
     print('All required parameters are present. Check complete.')
@@ -170,11 +196,11 @@ def validate_path(path, expected_type):
     path = pathlib.Path(path)#.resolve()
 
     if expected_type == 'file' and not path.is_file():
-        #raise ValueError(f'The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-        print(f'WARNING: The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        raise ValueError(f'The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        #print(f'WARNING: The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \'params_file.txt\'.')
     elif expected_type == 'directory' and not path.is_dir():
-        #raise ValueError(f'The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
-        print(f'WARNING: The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        raise ValueError(f'The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
+        #print(f'WARNING: The input {path} is not a valid directory. Please provide the absolute or relative filepath to \'params_file.txt\'.')
 
 def read_params(params_file_path):
     """

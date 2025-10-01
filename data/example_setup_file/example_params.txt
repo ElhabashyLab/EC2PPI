@@ -29,13 +29,19 @@
     "prediction_complex_ec_directory" : "<path>",
     "prediction_complex_af3_directory" : "<path>",
 
-# model import filepath or "latest" for latest trained model (stored in export directory)
+# model import filepath or "latest" for latest trained model (stored in export directory as pickle file (.pkl))
     "model_import_filepath" : "latest",
 
 # results export
     "prediction_export_filepath" : "<path>",
 
 #===Optional parameters===
+
+# parallelize feature calculation (default: true / false)
+    "parallelized_feature_calculation" : default,
+
+# classifier type (default: random_forest / hist_gradient_boost)
+    "classifier_type" : "default",
 
 # training parameters (default: uses default parameters / nested json parameter grid)
     "training_parameters" : "default",

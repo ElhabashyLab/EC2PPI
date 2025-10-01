@@ -29,10 +29,6 @@ def main():
         print(f"Time taken to read dataset: {read_in_time - start_time:.2f} seconds")
         print(f"Total time so far: {read_in_time - start_time:.2f} seconds")
 
-        # smaller debug sets
-        #training_protein_pairs = training_protein_pairs[:1]  # Use only the first protein pair for debugging
-        #training_protein_pairs = training_protein_pairs[650:-650]
-
         # Calculate features for the training dataset
         calculate_all_features(training_protein_pairs, params)
 
@@ -58,10 +54,6 @@ def main():
         read_in_time = time.time()
         print(f"Time taken to read dataset: {read_in_time - start_time:.2f} seconds")
         print(f"Total time so far: {read_in_time - start_time:.2f} seconds")
-
-        # smaller debug sets
-        #prediction_protein_pairs = prediction_protein_pairs[:1]  # Use only the first protein pair for debugging
-        #rediction_protein_pairs = prediction_protein_pairs[300:-300]
 
         # Calculate features for the prediction dataset
         calculate_all_features(prediction_protein_pairs, params)

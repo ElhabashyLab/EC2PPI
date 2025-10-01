@@ -8,7 +8,7 @@ from joblib import Parallel, delayed
 
 
 def features_from_ec_file(ec_filepath: str, feature_list: list):
-    """Extract features from the EC file.
+    """Extract specified features from the EC file.
 
     :param ec_filepath: Path to the EC file.
     :param feature_list: List of features to extract.
@@ -37,7 +37,7 @@ def features_from_ec_file(ec_filepath: str, feature_list: list):
     return features
 
 def features_from_af3_directory(af3_directory: str, feature_list: list):
-    """Extract features from the AF3 directory.
+    """Extract specified features from the AF3 directory.
 
     :param af3_directory: Path to the AF3 directory.
     :param feature_list: List of features to extract.
@@ -63,6 +63,8 @@ def features_from_af3_directory(af3_directory: str, feature_list: list):
 
     features = []
 
+    if 'ptm' in feature_list:
+        features.append(summary_conf['ptm'])
     if 'iptm' in feature_list:
         features.append(summary_conf['iptm'])
     if 'fraction_disordered' in feature_list:
@@ -93,8 +95,8 @@ def features_from_af3_directory(af3_directory: str, feature_list: list):
         if 'pae_iqr' in feature_list:
             q75, q25 = np.percentile(sub_series_pae, [75, 25])
             features.append(q75 - q25)
-        if 'pae_max' in feature_list:
-            features.append(sub_series_pae.max())
+        if 'pae_min' in feature_list:
+            features.append(sub_series_pae.min())
         if 'pae_skewness' in feature_list:
             features.append(sub_series_pae.skew())
         if 'pae_kurtosis' in feature_list:
@@ -162,20 +164,22 @@ def calculate_all_features(protein_pairs, params, save_features: bool = True):
     """
     print('Calculating all features...')
     feature_list = params['feature_list']
-    #for i, protein_pair in enumerate(protein_pairs):
-    #    protein_pair.features = calculate_features(protein_pair, feature_list)
-    #    progress_bar(i, len(protein_pairs))
 
-    # Parallel processing
-    def _compute(pair, fl):
-        return calculate_features(pair, fl)
+    if params['parallelized_feature_calculation']:
+        def _compute(pair, fl):
+            return calculate_features(pair, fl)
 
-    all_features_in_order = Parallel(n_jobs=-1)(
-        delayed(_compute)(pair, feature_list) for pair in protein_pairs
-    )
+        all_features_in_order = Parallel(n_jobs=-1)(
+            delayed(_compute)(pair, feature_list) for pair in protein_pairs
+        )
 
-    for pair, features in zip(protein_pairs, all_features_in_order):
-        pair.features = features
+        for pair, features in zip(protein_pairs, all_features_in_order):
+            pair.features = features
+
+    else:
+        for i, protein_pair in enumerate(protein_pairs):
+            protein_pair.features = calculate_features(protein_pair, feature_list)
+            progress_bar(i, len(protein_pairs))
 
     if save_features:
         header = ['prefix'] + feature_list + ['label']

@@ -88,4 +88,4 @@ or `prediction export filepath` (for predictions).
   - If `model import filepath = latest`, results are linked to the most recently trained model  
 
 ### Trained model 
-In `data/example_input` a RF based model trained on default settings is included. The model was trained on a balnced data set of 1,418 mitochondrial protein pairs.
+In `data/example_input` a RF based model trained on default settings is included. The model was trained on a balanced data set of 1,418 mitochondrial protein pairs.

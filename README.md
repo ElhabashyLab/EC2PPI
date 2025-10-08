@@ -23,7 +23,7 @@ An example can be found in `data/example_setup_file/`
 You can run the tool with:
 
 ```bash
-python src.main example_setup_file/example_params.txt
+python -m src.main example_setup_file/example_params.txt
 ```
 
 ### Input: `params.txt`

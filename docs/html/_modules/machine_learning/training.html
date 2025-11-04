@@ -1,0 +1,204 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>machine_learning.training &mdash; EC2PPI - documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=b1628c55"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EC2PPI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EC2PPI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">machine_learning.training</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for machine_learning.training</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">HistGradientBoostingClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">GridSearchCV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.protein_pair</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProteinPair</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.machine_learning.evaluation</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_classifier</span>
+
+
+
+<div class="viewcode-block" id="train_interaction_classifier">
+<a class="viewcode-back" href="../../machine_learning.html#machine_learning.training.train_interaction_classifier">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">train_interaction_classifier</span><span class="p">(</span><span class="n">protein_pairs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ProteinPair</span><span class="p">],</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Trains and evaluates a classifier for protein-protein interaction prediction.</span>
+
+<span class="sd">    :param protein_pairs: List of ProteinPair objects with calculated features and labels.</span>
+<span class="sd">    :param params: Dictionary containing parameters for training and evaluation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">prepare_train_test_data</span><span class="p">(</span><span class="n">protein_pairs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;classifier_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;random_forest&#39;</span><span class="p">:</span>
+        <span class="n">clf</span> <span class="o">=</span> <span class="n">random_forest_classifier</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;classifier_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;hist_gradient_boosting&#39;</span><span class="p">:</span>
+        <span class="n">clf</span> <span class="o">=</span> <span class="n">hist_gradient_boosting_classifier</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+    <span class="n">best_model</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">best_estimator_</span>
+
+    <span class="n">evaluate_classifier</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;export_directory&#39;</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;feature_list&#39;</span><span class="p">])</span>
+
+    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;export_directory&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/best_model.pkl&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Model saved to </span><span class="si">{</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;export_directory&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prepare_train_test_data">
+<a class="viewcode-back" href="../../machine_learning.html#machine_learning.training.prepare_train_test_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_train_test_data</span><span class="p">(</span><span class="n">protein_pairs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ProteinPair</span><span class="p">],</span> <span class="n">split_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepares the training and test datasets from a list of ProteinPair objects.</span>
+
+<span class="sd">    :param protein_pairs: List of ProteinPair objects.</span>
+<span class="sd">    :param split_ratio: Proportion of the dataset to include in the test split.</span>
+<span class="sd">    :return: Tuple containing the training and test datasets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">protein_pairs</span><span class="p">:</span>
+        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pair</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pair</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">model_selection</span><span class="o">.</span><span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">split_ratio</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">2024</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="random_forest_classifier">
+<a class="viewcode-back" href="../../machine_learning.html#machine_learning.training.random_forest_classifier">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">random_forest_classifier</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a Random Forest classifier with the specified parameters.</span>
+
+<span class="sd">    :param params: Dictionary containing parameters for the classifier.</span>
+<span class="sd">    :return: Random Forest classifier.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">param_grid</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;training_parameters&#39;</span><span class="p">]</span>
+
+    <span class="n">rf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># GridSearchCV with 5-fold cross-validation</span>
+    <span class="n">grid_search</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span>
+        <span class="n">estimator</span><span class="o">=</span><span class="n">rf</span><span class="p">,</span>
+        <span class="n">param_grid</span><span class="o">=</span><span class="n">param_grid</span><span class="p">,</span>
+        <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;roc_auc&#39;</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">grid_search</span></div>
+
+
+<div class="viewcode-block" id="hist_gradient_boosting_classifier">
+<a class="viewcode-back" href="../../machine_learning.html#machine_learning.training.hist_gradient_boosting_classifier">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hist_gradient_boosting_classifier</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a HistGradientBoosting classifier with the specified parameters.</span>
+
+<span class="sd">    :param params: Dictionary containing parameters for the classifier.</span>
+<span class="sd">    :return: HistGradientBoosting classifier.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">param_grid</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;training_parameters&#39;</span><span class="p">]</span>
+
+    <span class="n">hgb</span> <span class="o">=</span> <span class="n">HistGradientBoostingClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># GridSearchCV with 5-fold cross-validation</span>
+    <span class="n">grid_search</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span>
+        <span class="n">estimator</span><span class="o">=</span><span class="n">hgb</span><span class="p">,</span>
+        <span class="n">param_grid</span><span class="o">=</span><span class="n">param_grid</span><span class="p">,</span>
+        <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;roc_auc&#39;</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">grid_search</span></div>
+
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jakob Jonischkeit.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

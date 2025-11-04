@@ -1,0 +1,37 @@
+data\_processing package
+========================
+
+Submodules
+----------
+
+data\_processing.feature\_calculation module
+--------------------------------------------
+
+.. automodule:: data_processing.feature_calculation
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+data\_processing.read\_dataset module
+-------------------------------------
+
+.. automodule:: data_processing.read_dataset
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+data\_processing.read\_params module
+------------------------------------
+
+.. automodule:: data_processing.read_params
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: data_processing
+   :members:
+   :show-inheritance:
+   :undoc-members:

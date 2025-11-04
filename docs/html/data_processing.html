@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>data_processing package &mdash; EC2PPI - documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=b1628c55"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="machine_learning package" href="machine_learning.html" />
+    <link rel="prev" title="src" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            EC2PPI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">data_processing package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-data_processing.feature_calculation">data_processing.feature_calculation module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.feature_calculation.calculate_all_features"><code class="docutils literal notranslate"><span class="pre">calculate_all_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.feature_calculation.calculate_features"><code class="docutils literal notranslate"><span class="pre">calculate_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.feature_calculation.features_from_af3_directory"><code class="docutils literal notranslate"><span class="pre">features_from_af3_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.feature_calculation.features_from_ec_file"><code class="docutils literal notranslate"><span class="pre">features_from_ec_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-data_processing.read_dataset">data_processing.read_dataset module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.read_dataset.get_path_from_prefix"><code class="docutils literal notranslate"><span class="pre">get_path_from_prefix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.read_dataset.read_applied_dataset"><code class="docutils literal notranslate"><span class="pre">read_applied_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.read_dataset.read_dataset"><code class="docutils literal notranslate"><span class="pre">read_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.read_dataset.read_training_dataset"><code class="docutils literal notranslate"><span class="pre">read_training_dataset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-data_processing.read_params">data_processing.read_params module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.read_params.check_required_params"><code class="docutils literal notranslate"><span class="pre">check_required_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.read_params.has_feature"><code class="docutils literal notranslate"><span class="pre">has_feature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.read_params.read_params"><code class="docutils literal notranslate"><span class="pre">read_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.read_params.set_default_param"><code class="docutils literal notranslate"><span class="pre">set_default_param()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_processing.read_params.validate_path"><code class="docutils literal notranslate"><span class="pre">validate_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-data_processing">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="machine_learning.html">machine_learning package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">EC2PPI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">data_processing package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/data_processing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="data-processing-package">
+<h1>data_processing package<a class="headerlink" href="#data-processing-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-data_processing.feature_calculation">
+<span id="data-processing-feature-calculation-module"></span><h2>data_processing.feature_calculation module<a class="headerlink" href="#module-data_processing.feature_calculation" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.feature_calculation.calculate_all_features">
+<span class="sig-prename descclassname"><span class="pre">data_processing.feature_calculation.</span></span><span class="sig-name descname"><span class="pre">calculate_all_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/feature_calculation.html#calculate_all_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.feature_calculation.calculate_all_features" title="Link to this definition"></a></dt>
+<dd><p>Calculate features for all protein pairs in the list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protein_pairs</strong> – List of ProteinPair objects.</p></li>
+<li><p><strong>params</strong> – Dictionary containing parameters, including the feature list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None, modifies the protein_pairs in place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.feature_calculation.calculate_features">
+<span class="sig-prename descclassname"><span class="pre">data_processing.feature_calculation.</span></span><span class="sig-name descname"><span class="pre">calculate_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein_pair</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">src.utils.protein_pair.ProteinPair</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/feature_calculation.html#calculate_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.feature_calculation.calculate_features" title="Link to this definition"></a></dt>
+<dd><p>Calculate features for a given protein pair.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protein_pair</strong> – ProteinPair object containing the proteins and their attributes.</p></li>
+<li><p><strong>feature_list</strong> – List of features to calculate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of features for the protein pair.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.feature_calculation.features_from_af3_directory">
+<span class="sig-prename descclassname"><span class="pre">data_processing.feature_calculation.</span></span><span class="sig-name descname"><span class="pre">features_from_af3_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">af3_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/feature_calculation.html#features_from_af3_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.feature_calculation.features_from_af3_directory" title="Link to this definition"></a></dt>
+<dd><p>Extract specified features from the AF3 directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>af3_directory</strong> – Path to the AF3 directory.</p></li>
+<li><p><strong>feature_list</strong> – List of features to extract.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of features extracted from the AF3 directory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.feature_calculation.features_from_ec_file">
+<span class="sig-prename descclassname"><span class="pre">data_processing.feature_calculation.</span></span><span class="sig-name descname"><span class="pre">features_from_ec_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ec_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/feature_calculation.html#features_from_ec_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.feature_calculation.features_from_ec_file" title="Link to this definition"></a></dt>
+<dd><p>Extract specified features from the EC file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ec_filepath</strong> – Path to the EC file.</p></li>
+<li><p><strong>feature_list</strong> – List of features to extract.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of features extracted from the EC file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-data_processing.read_dataset">
+<span id="data-processing-read-dataset-module"></span><h2>data_processing.read_dataset module<a class="headerlink" href="#module-data_processing.read_dataset" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.read_dataset.get_path_from_prefix">
+<span class="sig-prename descclassname"><span class="pre">data_processing.read_dataset.</span></span><span class="sig-name descname"><span class="pre">get_path_from_prefix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/read_dataset.html#get_path_from_prefix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.read_dataset.get_path_from_prefix" title="Link to this definition"></a></dt>
+<dd><p>Returns the file path for a given prefix in the specified directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> – Directory to search for the file.</p></li>
+<li><p><strong>prefix</strong> – Prefix of the file to find.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>File path as a string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.read_dataset.read_applied_dataset">
+<span class="sig-prename descclassname"><span class="pre">data_processing.read_dataset.</span></span><span class="sig-name descname"><span class="pre">read_applied_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/read_dataset.html#read_applied_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.read_dataset.read_applied_dataset" title="Link to this definition"></a></dt>
+<dd><p>Reads the use case dataset based on the provided parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> – Dictionary containing parameters for reading the dataset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of PPI objects representing the use case dataset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.read_dataset.read_dataset">
+<span class="sig-prename descclassname"><span class="pre">data_processing.read_dataset.</span></span><span class="sig-name descname"><span class="pre">read_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info_table_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ec_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af3_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/read_dataset.html#read_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.read_dataset.read_dataset" title="Link to this definition"></a></dt>
+<dd><p>Reads the dataset from the specified file paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>info_table_filepath</strong></p></li>
+<li><p><strong>label</strong> – Label to assign to all protein pairs in this dataset (1 for positive, 0 for negative).</p></li>
+<li><p><strong>ec_directory</strong> – Directory containing EC files.</p></li>
+<li><p><strong>af3_directory</strong> – Directory containing AF3 files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of ProteinPair objects representing the dataset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.read_dataset.read_training_dataset">
+<span class="sig-prename descclassname"><span class="pre">data_processing.read_dataset.</span></span><span class="sig-name descname"><span class="pre">read_training_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/read_dataset.html#read_training_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.read_dataset.read_training_dataset" title="Link to this definition"></a></dt>
+<dd><p>Reads the training dataset based on the provided parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> – Dictionary containing parameters for reading the dataset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of PPI objects representing the training dataset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-data_processing.read_params">
+<span id="data-processing-read-params-module"></span><h2>data_processing.read_params module<a class="headerlink" href="#module-data_processing.read_params" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.read_params.check_required_params">
+<span class="sig-prename descclassname"><span class="pre">data_processing.read_params.</span></span><span class="sig-name descname"><span class="pre">check_required_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/read_params.html#check_required_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.read_params.check_required_params" title="Link to this definition"></a></dt>
+<dd><p>Checks if all required parameters are present in the given dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> – Dictionary containing parameters.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If any required parameter is missing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.read_params.has_feature">
+<span class="sig-prename descclassname"><span class="pre">data_processing.read_params.</span></span><span class="sig-name descname"><span class="pre">has_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_match</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/read_params.html#has_feature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.read_params.has_feature" title="Link to this definition"></a></dt>
+<dd><p>Checks if a feature is present in the feature list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_list</strong> – List of features.</p></li>
+<li><p><strong>prefix</strong> – Optional prefix to check for.</p></li>
+<li><p><strong>exact_match</strong> – Optional exact match to check for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the feature is present, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.read_params.read_params">
+<span class="sig-prename descclassname"><span class="pre">data_processing.read_params.</span></span><span class="sig-name descname"><span class="pre">read_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params_file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/read_params.html#read_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.read_params.read_params" title="Link to this definition"></a></dt>
+<dd><p>Reads the parameters from a given file path and checks for required parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params_file_path</strong> – Path to the parameters file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing the parameters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.read_params.set_default_param">
+<span class="sig-prename descclassname"><span class="pre">data_processing.read_params.</span></span><span class="sig-name descname"><span class="pre">set_default_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/read_params.html#set_default_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.read_params.set_default_param" title="Link to this definition"></a></dt>
+<dd><p>Sets default values for parameters that are not provided in the given dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param</strong> – Parameter to be set to default.</p></li>
+<li><p><strong>params</strong> – Dictionary containing parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Default values for the parameter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_processing.read_params.validate_path">
+<span class="sig-prename descclassname"><span class="pre">data_processing.read_params.</span></span><span class="sig-name descname"><span class="pre">validate_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_processing/read_params.html#validate_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_processing.read_params.validate_path" title="Link to this definition"></a></dt>
+<dd><p>Validates the file paths in the parameters dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – Path to be validated.</p></li>
+<li><p><strong>expected_type</strong> – Type of path (‘file’ or ‘directory’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If any path is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-data_processing">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-data_processing" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="src" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="machine_learning.html" class="btn btn-neutral float-right" title="machine_learning package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jakob Jonischkeit.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

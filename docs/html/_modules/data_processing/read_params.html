@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>data_processing.read_params &#8212; EC2PPI - documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=b1628c55"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for data_processing.read_params</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+
+<div class="viewcode-block" id="set_default_param">
+<a class="viewcode-back" href="../../data_processing.html#data_processing.read_params.set_default_param">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_default_param</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets default values for parameters that are not provided in the given dictionary.</span>
+
+<span class="sd">    :param param: Parameter to be set to default.</span>
+<span class="sd">    :param params: Dictionary containing parameters.</span>
+<span class="sd">    :return: Default values for the parameter.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;training_parameters&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;classifier_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;random_forest&#39;</span><span class="p">:</span>
+            <span class="n">param_grid</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+                <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
+                <span class="s1">&#39;max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sqrt&#39;</span><span class="p">,</span> <span class="s1">&#39;log2&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+                <span class="s1">&#39;min_samples_split&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;classifier_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;hist_gradient_boosting&#39;</span><span class="p">:</span>
+            <span class="n">param_grid</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;max_iter&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+                <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
+                <span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+                <span class="s2">&quot;min_samples_leaf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unsupported classifier type: </span><span class="si">{</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;classifier_type&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">. Supported types are &quot;random_forest&quot; and &quot;hist_gradient_boosting&quot;.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">param_grid</span>
+    <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;feature_list&#39;</span><span class="p">:</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;cn_mean&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cn_std&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cn_median&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cn_iqr&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cn_max&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cn_skewness&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cn_kurtosis&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;iptm&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;fraction_disordered&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;plddt_mean&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;contact_probs_mean&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;contact_probs_std&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;contact_probs_median&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;contact_probs_iqr&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;contact_probs_max&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;contact_probs_skewness&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;contact_probs_kurtosis&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pae_mean&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pae_std&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pae_median&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pae_iqr&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pae_min&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pae_skewness&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pae_kurtosis&#39;</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">features</span>
+    <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;classifier_type&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;random_forest&#39;</span>
+    <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;parallelized_feature_calculation&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="has_feature">
+<a class="viewcode-back" href="../../data_processing.html#data_processing.read_params.has_feature">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">has_feature</span><span class="p">(</span><span class="n">feature_list</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if a feature is present in the feature list.</span>
+
+<span class="sd">    :param feature_list: List of features.</span>
+<span class="sd">    :param prefix: Optional prefix to check for.</span>
+<span class="sd">    :param exact_match: Optional exact match to check for.</span>
+<span class="sd">    :return: True if the feature is present, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">feature_list</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exact_match</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">exact_match</span> <span class="ow">in</span> <span class="n">feature_list</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="check_required_params">
+<a class="viewcode-back" href="../../data_processing.html#data_processing.read_params.check_required_params">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_required_params</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if all required parameters are present in the given dictionary.</span>
+
+<span class="sd">    :param params: Dictionary containing parameters.</span>
+<span class="sd">    :raises ValueError: If any required parameter is missing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Checking required parameters...&#39;</span><span class="p">)</span>
+    <span class="n">required_params</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;training_run&#39;</span><span class="p">,</span> <span class="s1">&#39;prediction_run&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">required_params</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Missing required parameter: </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;training_run&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;prediction_run&#39;</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;At least one of training_run or prediction_run must be set to true in the parameters.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Parsing optional parameters</span>
+    <span class="n">optional_params</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;classifier_type&#39;</span><span class="p">,</span> <span class="s1">&#39;training_parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;feature_list&#39;</span><span class="p">,</span> <span class="s1">&#39;parallelized_feature_calculation&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">optional_params</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">set_default_param</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;feature_list&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;feature_list must be a list of features or &quot;default&quot;.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;training_parameters&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;training_parameters must be a dictionary of parameters or &quot;default&quot;.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;classifier_type&#39;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;random_forest&#39;</span><span class="p">,</span> <span class="s1">&#39;hist_gradient_boosting&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;classifier_type must be either &quot;random_forest&quot;, &quot;hist_gradient_boosting&quot;, or &quot;default&quot;.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;parallelized_feature_calculation&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;parallelized_feature_calculation must be either true, false, or &quot;default&quot;.&#39;</span><span class="p">)</span>
+
+
+
+    <span class="c1"># Check what features are included</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">has_feature</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;feature_list&#39;</span><span class="p">],</span> <span class="n">exact_match</span><span class="o">=</span><span class="s1">&#39;iptm&#39;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_feature</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;feature_list&#39;</span><span class="p">],</span> <span class="n">exact_match</span><span class="o">=</span><span class="s1">&#39;fraction_disordered&#39;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_feature</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;feature_list&#39;</span><span class="p">],</span> <span class="n">exact_match</span><span class="o">=</span><span class="s1">&#39;plddt_mean&#39;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_feature</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;feature_list&#39;</span><span class="p">],</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;pae_&#39;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_feature</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;feature_list&#39;</span><span class="p">],</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;contact_probs_&#39;</span><span class="p">)</span>
+        <span class="p">):</span>
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;include_af3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;include_af3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_feature</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;feature_list&#39;</span><span class="p">],</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;cn_&#39;</span><span class="p">):</span>
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;include_ec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;include_ec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Checking required parameters for training and validate paths</span>
+    <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;training_run&#39;</span><span class="p">]:</span>
+        <span class="n">required_params_training</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;positive_training_complex_info_table_filepath&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;negative_training_complex_info_table_filepath&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;export_directory&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;include_af3&#39;</span><span class="p">]:</span>
+            <span class="n">required_params_training</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;positive_training_complex_af3_directory&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;negative_training_complex_af3_directory&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;include_ec&#39;</span><span class="p">]:</span>
+            <span class="n">required_params_training</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;positive_training_complex_ec_directory&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;negative_training_complex_ec_directory&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">required_params_training</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Missing required training parameter: </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;export_directory&#39;</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;export_directory&#39;</span><span class="p">],</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_filepath&#39;</span><span class="p">):</span>
+                <span class="n">validate_path</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">],</span> <span class="s1">&#39;file&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_directory&#39;</span><span class="p">):</span>
+                <span class="n">validate_path</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">],</span> <span class="s1">&#39;directory&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Checking required parameters for prediction and validate paths</span>
+    <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;prediction_run&#39;</span><span class="p">]:</span>
+        <span class="n">required_params_prediction</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;prediction_complex_info_table_filepath&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;model_import_filepath&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;prediction_export_directory&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;include_af3&#39;</span><span class="p">]:</span>
+            <span class="n">required_params_prediction</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;prediction_complex_af3_directory&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;include_ec&#39;</span><span class="p">]:</span>
+            <span class="n">required_params_prediction</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;prediction_complex_ec_directory&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">required_params_prediction</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Missing required prediction parameter: </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;prediction_export_directory&#39;</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;prediction_export_directory&#39;</span><span class="p">],</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;model_import_filepath&#39;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;model_import_filepath&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;latest&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_filepath&#39;</span><span class="p">):</span>
+                <span class="n">validate_path</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">],</span> <span class="s1">&#39;file&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_directory&#39;</span><span class="p">):</span>
+                <span class="n">validate_path</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">],</span> <span class="s1">&#39;directory&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;model_import_filepath&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;latest&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;export_directory&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;If model_import_filepath is set to &quot;latest&quot;, export_directory must also be provided.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;training_run&#39;</span><span class="p">]:</span>
+                <span class="n">validate_path</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;export_directory&#39;</span><span class="p">],</span> <span class="s1">&#39;directory&#39;</span><span class="p">)</span>
+                <span class="n">validate_path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;export_directory&#39;</span><span class="p">],</span> <span class="s1">&#39;best_model.pkl&#39;</span><span class="p">),</span> <span class="s1">&#39;file&#39;</span><span class="p">)</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;model_import_filepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;export_directory&#39;</span><span class="p">],</span> <span class="s1">&#39;best_model.pkl&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;All required parameters are present. Check complete.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="validate_path">
+<a class="viewcode-back" href="../../data_processing.html#data_processing.read_params.validate_path">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">expected_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validates the file paths in the parameters dictionary.</span>
+
+<span class="sd">    :param path: Path to be validated.</span>
+<span class="sd">    :param expected_type: Type of path (&#39;file&#39; or &#39;directory&#39;).</span>
+<span class="sd">    :raises ValueError: If any path is invalid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="c1">#.resolve()</span>
+
+    <span class="k">if</span> <span class="n">expected_type</span> <span class="o">==</span> <span class="s1">&#39;file&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The input </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1"> is not a valid filepath. Please provide the absolute or relative filepath to </span><span class="se">\&#39;</span><span class="s1">params_file.txt</span><span class="se">\&#39;</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="c1">#print(f&#39;WARNING: The input {path} is not a valid filepath. Please provide the absolute or relative filepath to \&#39;params_file.txt\&#39;.&#39;)</span>
+    <span class="k">elif</span> <span class="n">expected_type</span> <span class="o">==</span> <span class="s1">&#39;directory&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The input </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1"> is not a valid directory. Please provide the absolute or relative filepath to </span><span class="se">\&#39;</span><span class="s1">params_file.txt</span><span class="se">\&#39;</span><span class="s1">.&#39;</span><span class="p">)</span></div>
+
+        <span class="c1">#print(f&#39;WARNING: The input {path} is not a valid directory. Please provide the absolute or relative filepath to \&#39;params_file.txt\&#39;.&#39;)</span>
+
+<div class="viewcode-block" id="read_params">
+<a class="viewcode-back" href="../../data_processing.html#data_processing.read_params.read_params">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_params</span><span class="p">(</span><span class="n">params_file_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads the parameters from a given file path and checks for required parameters.</span>
+
+<span class="sd">    :param params_file_path: Path to the parameters file.</span>
+<span class="sd">    :return: Dictionary containing the parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">params_file_path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The input </span><span class="si">{</span><span class="n">params_file_path</span><span class="si">}</span><span class="s1"> is not a valid filepath. Please provide the absolute or relative filepath to </span><span class="se">\&#39;</span><span class="s1">params_file.txt</span><span class="se">\&#39;</span><span class="s1">.&#39;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">params_file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+    <span class="n">json_string</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">json_string</span> <span class="o">+=</span> <span class="n">d</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="k">if</span> <span class="n">json_string</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;,</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+        <span class="n">json_string</span> <span class="o">=</span> <span class="n">json_string</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+    <span class="n">params</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_string</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The input </span><span class="si">{</span><span class="n">params_file_path</span><span class="si">}</span><span class="s1"> is not a valid params file. Please provide the absolute or relative filepath to </span><span class="se">\&#39;</span><span class="s1">params_file.txt</span><span class="se">\&#39;</span><span class="s1">.&#39;</span><span class="p">)</span>
+
+    <span class="n">check_required_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Parameters read from </span><span class="si">{</span><span class="n">params_file_path</span><span class="si">}</span><span class="s1">:</span><span class="se">\n</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;All paths are valid. Paths check complete.&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">params</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">EC2PPI</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Jakob Jonischkeit.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,37 @@
+machine\_learning package
+=========================
+
+Submodules
+----------
+
+machine\_learning.evaluation module
+-----------------------------------
+
+.. automodule:: machine_learning.evaluation
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+machine\_learning.prediction module
+-----------------------------------
+
+.. automodule:: machine_learning.prediction
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+machine\_learning.training module
+---------------------------------
+
+.. automodule:: machine_learning.training
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: machine_learning
+   :members:
+   :show-inheritance:
+   :undoc-members:

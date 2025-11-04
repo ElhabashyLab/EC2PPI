@@ -15,3 +15,8 @@ data/example_setup_file/training_params_testing_params_parser.txt
 data/example_output/
 
 src/utils/testing.py
+
+Makefile
+build/
+make.bat
+source/

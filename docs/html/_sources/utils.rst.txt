@@ -1,0 +1,30 @@
+utils package
+=============
+
+Submodules
+----------
+
+utils.print module
+------------------
+
+.. automodule:: utils.print
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+utils.protein\_pair module
+--------------------------
+
+.. automodule:: utils.protein_pair
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+
+Module contents
+---------------
+
+.. automodule:: utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
